@@ -1,0 +1,13 @@
+.venv/
+.venv311/
+__pycache__/
+*.pyc
+artifacts/
+*.sqlite
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.DS_Store
+

@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rpm-mcts-baseline"
+version = "0.1.0"
+description = "Part 1 baseline replication scaffold for RPM-MCTS with SQLite-first data management."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "numpy<2",
+  "torch>=2.2.0",
+  "transformers>=4.44.0,<4.47",
+  "openai>=1.50.0",
+  "datasets>=2.21.0",
+]
+
+[project.scripts]
+rpm-baseline = "rpm_mcts_baseline.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

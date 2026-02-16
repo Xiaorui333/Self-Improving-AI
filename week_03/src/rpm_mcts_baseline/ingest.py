@@ -26,6 +26,31 @@ def _resolve_problem_uid(record: dict[str, Any], spec: DatasetSpec, index: int) 
     return str(value)
 
 
+def _apply_split_filter(records: list[dict[str, Any]], split_filter: dict[str, Any] | None) -> list[dict[str, Any]]:
+    if not split_filter:
+        return records
+    kept: list[dict[str, Any]] = []
+    for record in records:
+        matches = True
+        for key, expected in split_filter.items():
+            if record.get(key) != expected:
+                matches = False
+                break
+        if matches:
+            kept.append(record)
+    return kept
+
+
+def _project_raw_record(record: dict[str, Any], spec: DatasetSpec) -> dict[str, Any]:
+    if not spec.raw_keep_fields:
+        return record
+    projected: dict[str, Any] = {}
+    for field in spec.raw_keep_fields:
+        if field in record:
+            projected[field] = record[field]
+    return projected
+
+
 def ingest_dataset(
     conn: sqlite3.Connection,
     spec: DatasetSpec,
@@ -46,31 +71,74 @@ def ingest_dataset(
 
     ingested: dict[str, int] = {}
 
+    source_split_map = spec.source_split_map or {}
+    split_filters = spec.split_filters or {}
+    source_cache: dict[str, list[dict[str, Any]]] = {}
+
     for split_name in spec.splits:
-        ds = load_dataset(path=spec.hf_path, name=spec.hf_name, split=split_name)
+        source_split = source_split_map.get(split_name, split_name)
+        if source_split not in source_cache:
+            ds = load_dataset(path=spec.hf_path, name=spec.hf_name, split=source_split)
+            source_cache[source_split] = [as_jsonable_record(dict(sample)) for sample in ds]
+
+        records = source_cache[source_split]
+        records = _apply_split_filter(records, split_filters.get(split_name))
         if limit_per_split is not None:
-            ds = ds.select(range(min(limit_per_split, len(ds))))
+            records = records[: max(0, limit_per_split)]
 
         split_id = upsert_split(
             conn=conn,
             dataset_id=dataset_id,
             split_name=split_name,
-            sample_count=len(ds),
+            sample_count=len(records),
         )
 
         with transaction(conn):
             # Keep ingestion idempotent for repeated runs.
+            conn.execute(
+                """
+                DELETE FROM run_metrics
+                WHERE run_id IN (
+                    SELECT DISTINCT g.run_id
+                    FROM generations g
+                    JOIN problems p ON p.id = g.problem_id
+                    WHERE p.dataset_split_id = ?
+                )
+                """,
+                (split_id,),
+            )
+            conn.execute(
+                """
+                DELETE FROM evaluations
+                WHERE generation_id IN (
+                    SELECT g.id
+                    FROM generations g
+                    JOIN problems p ON p.id = g.problem_id
+                    WHERE p.dataset_split_id = ?
+                )
+                """,
+                (split_id,),
+            )
+            conn.execute(
+                """
+                DELETE FROM generations
+                WHERE problem_id IN (
+                    SELECT id FROM problems WHERE dataset_split_id = ?
+                )
+                """,
+                (split_id,),
+            )
             conn.execute("DELETE FROM raw_samples WHERE dataset_split_id = ?", (split_id,))
             conn.execute("DELETE FROM problems WHERE dataset_split_id = ?", (split_id,))
 
-            for idx, sample in enumerate(ds):
-                record = as_jsonable_record(dict(sample))
+            for idx, record in enumerate(records):
+                raw_record = _project_raw_record(record, spec)
                 conn.execute(
                     """
                     INSERT INTO raw_samples(dataset_split_id, sample_index, record_json)
                     VALUES (?, ?, ?)
                     """,
-                    (split_id, idx, json.dumps(record, ensure_ascii=True)),
+                    (split_id, idx, json.dumps(raw_record, ensure_ascii=True)),
                 )
 
                 problem_uid = _resolve_problem_uid(record, spec, idx)
@@ -110,6 +178,6 @@ def ingest_dataset(
                         json.dumps(metadata, ensure_ascii=True),
                     ),
                 )
-        ingested[split_name] = len(ds)
+        ingested[split_name] = len(records)
     return ingested
 

@@ -3,5 +3,6 @@ __all__ = [
     "dataset_catalog",
     "ingest",
     "generate",
+    "evaluate",
 ]
 

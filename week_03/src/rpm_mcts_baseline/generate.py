@@ -165,14 +165,23 @@ class OpenAIGenerator:
         seed: int | None,
     ) -> dict[str, Any]:
         start = time.perf_counter()
-        response = self.client.responses.create(
-            model=self.model_name,
-            input=prompt,
-            temperature=temperature,
-            top_p=top_p if top_p is not None else 1.0,
-            max_output_tokens=max_new_tokens,
-            seed=seed,
-        )
+        request_kwargs: dict[str, Any] = {
+            "model": self.model_name,
+            "input": prompt,
+            "temperature": temperature,
+            "top_p": top_p if top_p is not None else 1.0,
+            "max_output_tokens": max_new_tokens,
+        }
+        if seed is not None:
+            request_kwargs["seed"] = seed
+        try:
+            response = self.client.responses.create(**request_kwargs)
+        except TypeError as exc:
+            # Older/newer SDK variants may not support seed for responses.create.
+            if "seed" not in str(exc):
+                raise
+            request_kwargs.pop("seed", None)
+            response = self.client.responses.create(**request_kwargs)
         elapsed_ms = (time.perf_counter() - start) * 1000
 
         usage = getattr(response, "usage", None)

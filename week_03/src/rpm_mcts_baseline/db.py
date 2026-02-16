@@ -100,16 +100,32 @@ CREATE TABLE IF NOT EXISTS evaluations (
     FOREIGN KEY(generation_id) REFERENCES generations(id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS run_metrics (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    run_id INTEGER NOT NULL,
+    dataset_name TEXT NOT NULL,
+    split_name TEXT NOT NULL,
+    metric_name TEXT NOT NULL,
+    metric_value REAL NOT NULL,
+    metadata_json TEXT NOT NULL DEFAULT '{}',
+    computed_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(run_id, dataset_name, split_name, metric_name),
+    FOREIGN KEY(run_id) REFERENCES generation_runs(id) ON DELETE CASCADE
+);
+
 CREATE INDEX IF NOT EXISTS idx_raw_samples_split ON raw_samples(dataset_split_id);
 CREATE INDEX IF NOT EXISTS idx_problems_split ON problems(dataset_split_id);
 CREATE INDEX IF NOT EXISTS idx_generations_run ON generations(run_id);
 CREATE INDEX IF NOT EXISTS idx_generations_problem ON generations(problem_id);
+CREATE INDEX IF NOT EXISTS idx_metrics_run ON run_metrics(run_id);
 """
 
 
 def connect(db_path: str | Path) -> sqlite3.Connection:
     conn = sqlite3.connect(str(db_path))
     conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA foreign_keys=ON;")
+    conn.execute("PRAGMA journal_mode=WAL;")
     return conn
 
 
@@ -178,3 +194,36 @@ def upsert_split(
     ).fetchone()
     assert row is not None
     return int(row["id"])
+
+
+def upsert_run_metric(
+    conn: sqlite3.Connection,
+    run_id: int,
+    dataset_name: str,
+    split_name: str,
+    metric_name: str,
+    metric_value: float,
+    metadata: dict[str, Any] | None = None,
+) -> None:
+    metadata_json = json.dumps(metadata or {}, ensure_ascii=True)
+    conn.execute(
+        """
+        INSERT INTO run_metrics(
+            run_id, dataset_name, split_name, metric_name, metric_value, metadata_json
+        )
+        VALUES (?, ?, ?, ?, ?, ?)
+        ON CONFLICT(run_id, dataset_name, split_name, metric_name)
+        DO UPDATE SET
+            metric_value=excluded.metric_value,
+            metadata_json=excluded.metadata_json,
+            computed_at=CURRENT_TIMESTAMP
+        """,
+        (
+            run_id,
+            dataset_name,
+            split_name,
+            metric_name,
+            metric_value,
+            metadata_json,
+        ),
+    )

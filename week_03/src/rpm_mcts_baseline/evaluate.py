@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import json
+import re
 import sqlite3
 import subprocess
 import sys
 import tempfile
+import textwrap
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -33,10 +35,150 @@ def _parse_json(payload: str) -> dict[str, Any]:
     return {}
 
 
+def _extract_entrypoint_function_block(code: str, entry_point: str) -> str | None:
+    """Extract top-level `def entry_point(...)` block and ignore all other code."""
+    lines = code.splitlines()
+
+    # Preferred path: AST gives precise function boundaries when parseable.
+    try:
+        import ast
+
+        tree = ast.parse(code)
+        for node in tree.body:
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == entry_point:
+                start = node.lineno
+                if node.decorator_list:
+                    start = min(start, *(d.lineno for d in node.decorator_list))
+                end = node.end_lineno or node.lineno
+                return "\n".join(lines[start - 1 : end]).rstrip()
+    except SyntaxError:
+        pass
+
+    # Fallback path for non-parseable completions: scan text for top-level def.
+    start_idx: int | None = None
+    pattern = re.compile(rf"^(?:async\s+def|def)\s+{re.escape(entry_point)}\s*\(")
+    for i, ln in enumerate(lines):
+        if pattern.match(ln):
+            start_idx = i
+            break
+    if start_idx is None:
+        return None
+
+    end_idx = len(lines)
+    stop_re = re.compile(r"^(?:async\s+def|def|class)\s+|^if __name__\s*==")
+    for j in range(start_idx + 1, len(lines)):
+        if stop_re.match(lines[j]):
+            end_idx = j
+            break
+    return "\n".join(lines[start_idx:end_idx]).rstrip()
+
+
+def _reindent_completion(prompt: str, completion: str) -> str:
+    """Re-add lost indentation to the first line when upstream text was stripped.
+
+    If a completion ever arrives with leading indentation removed from the first
+    line, this helper restores that first-line indentation using the prompt
+    context while preserving relative indentation of subsequent lines.
+
+    Example (prompt ends with ``    \"\"\"\\n``, expected indent = 4):
+        raw model output : ``    return x\\n``
+        after .strip()   : ``return x\\n``          ← first-line indent lost
+        after this func  : ``    return x\\n``       ← restored
+    """
+    if not completion or completion[0] in (" ", "\t"):
+        return completion  # already indented — nothing to fix
+
+    # If the completion itself starts a new def/class at column 0 (e.g. a nested
+    # helper the model generated before the return statement), reindenting would
+    # corrupt all subsequent lines.  Let it pass through; _truncate_to_function_body
+    # will handle it, and the assembler will surface any real syntax issues.
+    first_token = completion.lstrip().split()[0] if completion.strip() else ""
+    if first_token in ("def", "class", "async"):
+        return completion
+
+    # Detect expected indent from the last non-empty line of the prompt.
+    # Only fix the FIRST line to preserve relative indentation in following lines.
+    for line in reversed(prompt.split("\n")):
+        if line.strip():
+            indent = len(line) - len(line.lstrip())
+            if indent > 0:
+                lines = completion.split("\n")
+                lines[0] = " " * indent + lines[0]
+                return "\n".join(lines)
+            break
+    return completion
+
+
+def _extract_code_from_markdown_fences(text: str) -> str:
+    """Extract code content from markdown fences if present."""
+    fenced = re.findall(r"```(?:[^\n`]*)\n(.*?)```", text, flags=re.DOTALL)
+    if not fenced:
+        return text
+    return "\n\n".join(block.strip("\n") for block in fenced if block.strip())
+
+
+def _has_top_level_entry_def(code: str, entry_point: str) -> bool:
+    """Return True if code contains top-level `def <entry_point>(...)`."""
+    pattern = rf"(?m)^def\s+{re.escape(entry_point)}\s*\("
+    return re.search(pattern, code) is not None
+
+
+def _indent_body_lines(body: str, spaces: int = 4) -> str:
+    """Indent non-empty lines by `spaces` spaces."""
+    prefix = " " * spaces
+    return "\n".join(prefix + ln if ln.strip() else ln for ln in body.splitlines())
+
+
+def _remove_forbidden_solution_lines(code: str) -> str:
+    """Drop obvious non-solution artifacts from generated candidate text."""
+    forbidden = (
+        r"^\s*assert\b",
+        r"^\s*if\s+__name__\s*==",
+        r"^\s*def\s+check\b",
+        r"^\s*def\s+check_solution\b",
+        r"^\s*check_solution\s*\(",
+        r"^\s*doctest\.",
+        r"^\s*main\s*\(",
+    )
+    out: list[str] = []
+    for ln in code.splitlines():
+        if any(re.search(pat, ln) for pat in forbidden):
+            continue
+        out.append(ln)
+    return "\n".join(out)
+
+
+def sanitize_humaneval_candidate(
+    prompt_text: str,
+    completion_text: str,
+    entry_point: str,
+) -> tuple[str, str]:
+    """Return (solution_code, candidate_completion) for HumanEval assembly.
+
+    3-stage sanitizer:
+      1) extract code from markdown fences
+      2) if top-level def entry_point exists, use completion as full solution code
+      3) else treat completion as body and indent all non-empty lines by 4 spaces
+    """
+    cleaned = _extract_code_from_markdown_fences(completion_text).strip("\n")
+    cleaned = _remove_forbidden_solution_lines(cleaned)
+    fn_block = _extract_entrypoint_function_block(cleaned, entry_point)
+    if fn_block:
+        solution_code = fn_block
+        candidate_completion = fn_block
+    else:
+        # Treat as body: normalize indentation first, then indent to function scope.
+        body = textwrap.dedent(cleaned).strip("\n")
+        body = _indent_body_lines(body, spaces=4)
+        solution_code = f"{prompt_text}{body}"
+        candidate_completion = body
+    return solution_code, candidate_completion
+
+
 def _build_program(row: sqlite3.Row) -> tuple[str | None, str | None]:
     dataset_name = str(row["dataset_name"])
     completion = row["completion_text"] or ""
-    prompt_text = row["prompt_text"] or ""
+    prompt_text = row["problem_prompt"] or row["prompt_text"] or ""
     entry_point = row["entry_point"] or ""
     test_spec = _parse_json(row["test_spec_json"] or "{}")
 
@@ -46,9 +188,16 @@ def _build_program(row: sqlite3.Row) -> tuple[str | None, str | None]:
             return None, "missing_humaneval_test_code"
         if not entry_point:
             return None, "missing_entry_point"
+
+        solution_code, _ = sanitize_humaneval_candidate(
+            prompt_text=prompt_text,
+            completion_text=completion,
+            entry_point=entry_point,
+        )
+
         # HumanEval-style tests define check(candidate). We run it with the expected entry point.
         program = (
-            f"{prompt_text}{completion}\n\n"
+            f"{solution_code}\n\n"
             f"{test_code}\n\n"
             f"check({entry_point})\n"
             f"print({PASS_MARKER!r})\n"
@@ -60,6 +209,8 @@ def _build_program(row: sqlite3.Row) -> tuple[str | None, str | None]:
         if not isinstance(test_list, list) or not test_list:
             return None, "missing_mbpp_test_list"
         assertions = "\n".join(str(item) for item in test_list)
+        # Reindent in case completion was stripped (e.g. from MCTS)
+        completion = _reindent_completion(completion, completion)
         program = f"{completion}\n\n{assertions}\nprint({PASS_MARKER!r})\n"
         return program, None
 
@@ -102,6 +253,37 @@ def _run_python(program_text: str, timeout_sec: int) -> dict[str, Any]:
     }
 
 
+def execute_problem(
+    dataset_name: str,
+    prompt_text: str,
+    completion_text: str,
+    entry_point: str | None,
+    test_spec_json: str,
+    timeout_sec: int,
+) -> dict[str, Any]:
+    row_like = {
+        "dataset_name": dataset_name,
+        "problem_prompt": prompt_text,
+        "prompt_text": prompt_text,
+        "completion_text": completion_text,
+        "entry_point": entry_point or "",
+        "test_spec_json": test_spec_json,
+    }
+    program_text, prep_error = _build_program(row_like)  # type: ignore[arg-type]
+    if prep_error:
+        return {
+            "status": "unsupported",
+            "passed": 0,
+            "score": 0.0,
+            "stdout": "",
+            "stderr": prep_error,
+            "traceback": "",
+            "eval_json": {"reason": prep_error},
+        }
+    assert program_text is not None
+    return _run_python(program_text=program_text, timeout_sec=timeout_sec)
+
+
 def _get_run_id(conn: sqlite3.Connection, run_name: str) -> int:
     row = conn.execute(
         "SELECT id FROM generation_runs WHERE run_name = ?",
@@ -120,7 +302,7 @@ def _fetch_targets(conn: sqlite3.Connection, cfg: EvaluationConfig, run_id: int)
     query = f"""
         SELECT
             g.id AS generation_id,
-            g.prompt_text,
+            p.prompt AS problem_prompt,
             g.completion_text,
             p.entry_point,
             p.test_spec_json,

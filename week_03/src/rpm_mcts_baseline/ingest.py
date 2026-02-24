@@ -26,6 +26,23 @@ def _resolve_problem_uid(record: dict[str, Any], spec: DatasetSpec, index: int) 
     return str(value)
 
 
+def _extract_first_solution(record: dict[str, Any]) -> str | None:
+    if isinstance(record.get("code"), str) and record["code"].strip():
+        return str(record["code"])
+    solutions = record.get("solutions")
+    if isinstance(solutions, list):
+        for item in solutions:
+            if isinstance(item, str) and item.strip():
+                return item
+    if isinstance(solutions, dict):
+        sol_list = solutions.get("solution")
+        if isinstance(sol_list, list):
+            for item in sol_list:
+                if isinstance(item, str) and item.strip():
+                    return item
+    return None
+
+
 def _apply_split_filter(records: list[dict[str, Any]], split_filter: dict[str, Any] | None) -> list[dict[str, Any]]:
     if not split_filter:
         return records
@@ -73,6 +90,7 @@ def ingest_dataset(
 
     source_split_map = spec.source_split_map or {}
     split_filters = spec.split_filters or {}
+    target_counts = spec.target_counts or {}
     source_cache: dict[str, list[dict[str, Any]]] = {}
 
     for split_name in spec.splits:
@@ -83,6 +101,9 @@ def ingest_dataset(
 
         records = source_cache[source_split]
         records = _apply_split_filter(records, split_filters.get(split_name))
+        target_count = target_counts.get(split_name)
+        if target_count is not None:
+            records = records[: max(0, target_count)]
         if limit_per_split is not None:
             records = records[: max(0, limit_per_split)]
 
@@ -146,6 +167,8 @@ def ingest_dataset(
                 starter_code = _get_str(record, spec.starter_code_field)
                 entry_point = _get_str(record, spec.entry_point_field)
                 canonical_solution = _get_str(record, spec.canonical_solution_field)
+                if not canonical_solution:
+                    canonical_solution = _extract_first_solution(record)
 
                 test_payload = {}
                 if spec.test_field and spec.test_field in record:

@@ -4,5 +4,7 @@ __all__ = [
     "ingest",
     "generate",
     "evaluate",
+    "kb",
+    "rpm_mcts",
 ]
 

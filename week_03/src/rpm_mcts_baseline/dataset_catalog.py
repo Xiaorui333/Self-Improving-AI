@@ -19,6 +19,7 @@ class DatasetSpec:
     source_split_map: dict[str, str] | None = None
     split_filters: dict[str, dict[str, Any]] | None = None
     raw_keep_fields: tuple[str, ...] | None = None
+    target_counts: dict[str, int] | None = None
 
 
 # NOTE:
@@ -86,10 +87,15 @@ DEFAULT_SPECS: dict[str, DatasetSpec] = {
             "test_competition": "train",
         },
         split_filters={
-            "train": {"difficulty": "interview"},
             "test_introductory": {"difficulty": "introductory"},
             "test_interview": {"difficulty": "interview"},
             "test_competition": {"difficulty": "competition"},
+        },
+        target_counts={
+            "train": 3670,
+            "test_introductory": 150,
+            "test_interview": 150,
+            "test_competition": 150,
         },
     ),
     "codecontests": DatasetSpec(
@@ -101,6 +107,10 @@ DEFAULT_SPECS: dict[str, DatasetSpec] = {
         prompt_field="description",
         test_field="public_tests",
         raw_keep_fields=("name", "description", "public_tests", "difficulty", "source"),
+        target_counts={
+            "train": 7368,
+            "test": 150,
+        },
     ),
     "humaneval": DatasetSpec(
         key="humaneval",

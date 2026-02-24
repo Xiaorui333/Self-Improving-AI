@@ -113,11 +113,58 @@ CREATE TABLE IF NOT EXISTS run_metrics (
     FOREIGN KEY(run_id) REFERENCES generation_runs(id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS kb_steps (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    source_dataset TEXT NOT NULL,
+    source_split TEXT NOT NULL,
+    problem_uid TEXT NOT NULL,
+    step_index INTEGER NOT NULL,
+    step_text TEXT NOT NULL,
+    embedding_model TEXT,
+    embedding_blob BLOB,
+    embedding_dim INTEGER,
+    metadata_json TEXT NOT NULL DEFAULT '{}',
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS mcts_traces (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    run_id INTEGER NOT NULL,
+    problem_id INTEGER NOT NULL,
+    event_type TEXT NOT NULL,
+    payload_json TEXT NOT NULL DEFAULT '{}',
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(run_id) REFERENCES generation_runs(id) ON DELETE CASCADE,
+    FOREIGN KEY(problem_id) REFERENCES problems(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS mcts_nodes (
+    id TEXT PRIMARY KEY,
+    run_id INTEGER NOT NULL,
+    problem_id INTEGER NOT NULL,
+    parent_id TEXT,
+    state_text TEXT NOT NULL,
+    action_text TEXT,
+    visits INTEGER NOT NULL DEFAULT 0,
+    q_value REAL NOT NULL DEFAULT 0.0,
+    kb_reward REAL,
+    is_terminal BOOLEAN NOT NULL DEFAULT 0,
+    is_pruned BOOLEAN NOT NULL DEFAULT 0,
+    metadata_json TEXT NOT NULL DEFAULT '{}',
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(run_id) REFERENCES generation_runs(id) ON DELETE CASCADE,
+    FOREIGN KEY(problem_id) REFERENCES problems(id) ON DELETE CASCADE,
+    FOREIGN KEY(parent_id) REFERENCES mcts_nodes(id) ON DELETE CASCADE
+);
+
 CREATE INDEX IF NOT EXISTS idx_raw_samples_split ON raw_samples(dataset_split_id);
 CREATE INDEX IF NOT EXISTS idx_problems_split ON problems(dataset_split_id);
 CREATE INDEX IF NOT EXISTS idx_generations_run ON generations(run_id);
 CREATE INDEX IF NOT EXISTS idx_generations_problem ON generations(problem_id);
 CREATE INDEX IF NOT EXISTS idx_metrics_run ON run_metrics(run_id);
+CREATE INDEX IF NOT EXISTS idx_kb_steps_source ON kb_steps(source_dataset, source_split);
+CREATE INDEX IF NOT EXISTS idx_mcts_traces_run_problem ON mcts_traces(run_id, problem_id);
+CREATE INDEX IF NOT EXISTS idx_mcts_nodes_run_problem ON mcts_nodes(run_id, problem_id);
 """
 
 

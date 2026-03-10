@@ -1,6 +1,7 @@
 # Week 04 — Monte Carlo Policy Gradient (REINFORCE)
 
 A from-scratch implementation of the REINFORCE algorithm (vanilla policy gradient without a baseline) applied to the CartPole-v1 environment.
+Video walkthrough: https://youtu.be/EOWqPy49jo8
 
 ## Prerequisites
 

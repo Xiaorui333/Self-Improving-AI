@@ -1,5 +1,13 @@
 # Week 04 — Monte Carlo Policy Gradient (REINFORCE)
 
+The deliverable for this assignment is for you to create a video lecture of this material where you walk through the mathematical derivation and Pytorch code in your own words and with your own slides.
+
+video walkthrough: https://youtu.be/EOWqPy49jo8
+
+
+
+
+
 A from-scratch implementation of the REINFORCE algorithm (vanilla policy gradient without a baseline) applied to the CartPole-v1 environment.
 
 ## Prerequisites
@@ -77,3 +85,5 @@ Each of the 1 000 update steps proceeds as:
 ### Expected Behaviour
 
 CartPole gives a reward of +1 every timestep the pole stays upright (max 500). Over the course of training the average return should climb from ~10–20 towards 400–500, indicating the agent has learned to balance the pole.
+
+

@@ -1,0 +1,482 @@
+[
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.0003,
+      "value_lr": 0.001,
+      "gamma": 0.95,
+      "lam": 0.0
+    },
+    "score": -729.293222197785
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.0003,
+      "value_lr": 0.001,
+      "gamma": 0.95,
+      "lam": 0.95
+    },
+    "score": -651.0713854954728
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.0003,
+      "value_lr": 0.001,
+      "gamma": 0.95,
+      "lam": 1.0
+    },
+    "score": -633.4649669810848
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.0003,
+      "value_lr": 0.001,
+      "gamma": 0.99,
+      "lam": 0.0
+    },
+    "score": -713.6491410415716
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.0003,
+      "value_lr": 0.001,
+      "gamma": 0.99,
+      "lam": 0.95
+    },
+    "score": -656.1518093116212
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.0003,
+      "value_lr": 0.001,
+      "gamma": 0.99,
+      "lam": 1.0
+    },
+    "score": -679.4716980024411
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.0003,
+      "value_lr": 0.01,
+      "gamma": 0.95,
+      "lam": 0.0
+    },
+    "score": -677.7796393844054
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.0003,
+      "value_lr": 0.01,
+      "gamma": 0.95,
+      "lam": 0.95
+    },
+    "score": -645.7059216293948
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.0003,
+      "value_lr": 0.01,
+      "gamma": 0.95,
+      "lam": 1.0
+    },
+    "score": -644.5160061571174
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.0003,
+      "value_lr": 0.01,
+      "gamma": 0.99,
+      "lam": 0.0
+    },
+    "score": -736.0156197760292
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.0003,
+      "value_lr": 0.01,
+      "gamma": 0.99,
+      "lam": 0.95
+    },
+    "score": -687.2863184172894
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.0003,
+      "value_lr": 0.01,
+      "gamma": 0.99,
+      "lam": 1.0
+    },
+    "score": -682.0035018944006
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.001,
+      "value_lr": 0.001,
+      "gamma": 0.95,
+      "lam": 0.0
+    },
+    "score": -801.6065548360765
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.001,
+      "value_lr": 0.001,
+      "gamma": 0.95,
+      "lam": 0.95
+    },
+    "score": -603.4822323483186
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.001,
+      "value_lr": 0.001,
+      "gamma": 0.95,
+      "lam": 1.0
+    },
+    "score": -618.3963140681237
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.001,
+      "value_lr": 0.001,
+      "gamma": 0.99,
+      "lam": 0.0
+    },
+    "score": -878.7383556366179
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.001,
+      "value_lr": 0.001,
+      "gamma": 0.99,
+      "lam": 0.95
+    },
+    "score": -625.2837598315599
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.001,
+      "value_lr": 0.001,
+      "gamma": 0.99,
+      "lam": 1.0
+    },
+    "score": -684.864893108397
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.001,
+      "value_lr": 0.01,
+      "gamma": 0.95,
+      "lam": 0.0
+    },
+    "score": -638.4802908656026
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.001,
+      "value_lr": 0.01,
+      "gamma": 0.95,
+      "lam": 0.95
+    },
+    "score": -605.0934569717716
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.001,
+      "value_lr": 0.01,
+      "gamma": 0.95,
+      "lam": 1.0
+    },
+    "score": -591.546765879192
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.001,
+      "value_lr": 0.01,
+      "gamma": 0.99,
+      "lam": 0.0
+    },
+    "score": -799.1831887014856
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.001,
+      "value_lr": 0.01,
+      "gamma": 0.99,
+      "lam": 0.95
+    },
+    "score": -653.9533766426181
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.001,
+      "value_lr": 0.01,
+      "gamma": 0.99,
+      "lam": 1.0
+    },
+    "score": -671.4693011540637
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.0003,
+      "value_lr": 0.001,
+      "gamma": 0.95,
+      "lam": 0.0
+    },
+    "score": -729.9940760476792
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.0003,
+      "value_lr": 0.001,
+      "gamma": 0.95,
+      "lam": 0.95
+    },
+    "score": -641.4800496359759
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.0003,
+      "value_lr": 0.001,
+      "gamma": 0.95,
+      "lam": 1.0
+    },
+    "score": -648.1729153262878
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.0003,
+      "value_lr": 0.001,
+      "gamma": 0.99,
+      "lam": 0.0
+    },
+    "score": -724.8543985767719
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.0003,
+      "value_lr": 0.001,
+      "gamma": 0.99,
+      "lam": 0.95
+    },
+    "score": -658.6252307091462
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.0003,
+      "value_lr": 0.001,
+      "gamma": 0.99,
+      "lam": 1.0
+    },
+    "score": -681.8216247473189
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.0003,
+      "value_lr": 0.01,
+      "gamma": 0.95,
+      "lam": 0.0
+    },
+    "score": -674.2125256842423
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.0003,
+      "value_lr": 0.01,
+      "gamma": 0.95,
+      "lam": 0.95
+    },
+    "score": -638.0831073262207
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.0003,
+      "value_lr": 0.01,
+      "gamma": 0.95,
+      "lam": 1.0
+    },
+    "score": -625.2913252345467
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.0003,
+      "value_lr": 0.01,
+      "gamma": 0.99,
+      "lam": 0.0
+    },
+    "score": -731.9351688739606
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.0003,
+      "value_lr": 0.01,
+      "gamma": 0.99,
+      "lam": 0.95
+    },
+    "score": -650.3150309878782
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.0003,
+      "value_lr": 0.01,
+      "gamma": 0.99,
+      "lam": 1.0
+    },
+    "score": -670.2720940632843
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.001,
+      "value_lr": 0.001,
+      "gamma": 0.95,
+      "lam": 0.0
+    },
+    "score": -847.5408567850186
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.001,
+      "value_lr": 0.001,
+      "gamma": 0.95,
+      "lam": 0.95
+    },
+    "score": -591.4409028690771
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.001,
+      "value_lr": 0.001,
+      "gamma": 0.95,
+      "lam": 1.0
+    },
+    "score": -599.1677926391961
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.001,
+      "value_lr": 0.001,
+      "gamma": 0.99,
+      "lam": 0.0
+    },
+    "score": -938.7629650576292
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.001,
+      "value_lr": 0.001,
+      "gamma": 0.99,
+      "lam": 0.95
+    },
+    "score": -619.3000832046997
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.001,
+      "value_lr": 0.001,
+      "gamma": 0.99,
+      "lam": 1.0
+    },
+    "score": -669.584620036438
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.001,
+      "value_lr": 0.01,
+      "gamma": 0.95,
+      "lam": 0.0
+    },
+    "score": -661.8882564193935
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.001,
+      "value_lr": 0.01,
+      "gamma": 0.95,
+      "lam": 0.95
+    },
+    "score": -589.4153080498846
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.001,
+      "value_lr": 0.01,
+      "gamma": 0.95,
+      "lam": 1.0
+    },
+    "score": -601.4018924675411
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.001,
+      "value_lr": 0.01,
+      "gamma": 0.99,
+      "lam": 0.0
+    },
+    "score": -744.6350918030415
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.001,
+      "value_lr": 0.01,
+      "gamma": 0.99,
+      "lam": 0.95
+    },
+    "score": -619.4447987610985
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.001,
+      "value_lr": 0.01,
+      "gamma": 0.99,
+      "lam": 1.0
+    },
+    "score": -664.4939049339737
+  }
+]

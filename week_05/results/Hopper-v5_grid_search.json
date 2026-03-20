@@ -1,0 +1,482 @@
+[
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.0003,
+      "value_lr": 0.001,
+      "gamma": 0.95,
+      "lam": 0.0
+    },
+    "score": 37.08687966726185
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.0003,
+      "value_lr": 0.001,
+      "gamma": 0.95,
+      "lam": 0.95
+    },
+    "score": 100.47068348417031
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.0003,
+      "value_lr": 0.001,
+      "gamma": 0.95,
+      "lam": 1.0
+    },
+    "score": 93.57119334152782
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.0003,
+      "value_lr": 0.001,
+      "gamma": 0.99,
+      "lam": 0.0
+    },
+    "score": 31.351958127709832
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.0003,
+      "value_lr": 0.001,
+      "gamma": 0.99,
+      "lam": 0.95
+    },
+    "score": 101.04578094868371
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.0003,
+      "value_lr": 0.001,
+      "gamma": 0.99,
+      "lam": 1.0
+    },
+    "score": 90.1333051004133
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.0003,
+      "value_lr": 0.01,
+      "gamma": 0.95,
+      "lam": 0.0
+    },
+    "score": 78.00529083932456
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.0003,
+      "value_lr": 0.01,
+      "gamma": 0.95,
+      "lam": 0.95
+    },
+    "score": 96.49424005872021
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.0003,
+      "value_lr": 0.01,
+      "gamma": 0.95,
+      "lam": 1.0
+    },
+    "score": 96.86205868899107
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.0003,
+      "value_lr": 0.01,
+      "gamma": 0.99,
+      "lam": 0.0
+    },
+    "score": 89.4689324567766
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.0003,
+      "value_lr": 0.01,
+      "gamma": 0.99,
+      "lam": 0.95
+    },
+    "score": 97.11783414304107
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.0003,
+      "value_lr": 0.01,
+      "gamma": 0.99,
+      "lam": 1.0
+    },
+    "score": 96.55056324557751
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.001,
+      "value_lr": 0.001,
+      "gamma": 0.95,
+      "lam": 0.0
+    },
+    "score": 66.65759624613182
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.001,
+      "value_lr": 0.001,
+      "gamma": 0.95,
+      "lam": 0.95
+    },
+    "score": 158.2950016423667
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.001,
+      "value_lr": 0.001,
+      "gamma": 0.95,
+      "lam": 1.0
+    },
+    "score": 178.43585748166447
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.001,
+      "value_lr": 0.001,
+      "gamma": 0.99,
+      "lam": 0.0
+    },
+    "score": 62.36714374465374
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.001,
+      "value_lr": 0.001,
+      "gamma": 0.99,
+      "lam": 0.95
+    },
+    "score": 164.34385800321954
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.001,
+      "value_lr": 0.001,
+      "gamma": 0.99,
+      "lam": 1.0
+    },
+    "score": 186.0190958687515
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.001,
+      "value_lr": 0.01,
+      "gamma": 0.95,
+      "lam": 0.0
+    },
+    "score": 177.03754605997088
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.001,
+      "value_lr": 0.01,
+      "gamma": 0.95,
+      "lam": 0.95
+    },
+    "score": 180.12866475841736
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.001,
+      "value_lr": 0.01,
+      "gamma": 0.95,
+      "lam": 1.0
+    },
+    "score": 188.4646504446258
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.001,
+      "value_lr": 0.01,
+      "gamma": 0.99,
+      "lam": 0.0
+    },
+    "score": 187.1315687511976
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.001,
+      "value_lr": 0.01,
+      "gamma": 0.99,
+      "lam": 0.95
+    },
+    "score": 193.31441112573665
+  },
+  {
+    "config": {
+      "num_envs": 4,
+      "policy_lr": 0.001,
+      "value_lr": 0.01,
+      "gamma": 0.99,
+      "lam": 1.0
+    },
+    "score": 210.42727309583196
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.0003,
+      "value_lr": 0.001,
+      "gamma": 0.95,
+      "lam": 0.0
+    },
+    "score": 38.66239219431913
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.0003,
+      "value_lr": 0.001,
+      "gamma": 0.95,
+      "lam": 0.95
+    },
+    "score": 95.72831944878781
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.0003,
+      "value_lr": 0.001,
+      "gamma": 0.95,
+      "lam": 1.0
+    },
+    "score": 90.31093906199963
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.0003,
+      "value_lr": 0.001,
+      "gamma": 0.99,
+      "lam": 0.0
+    },
+    "score": 35.870107557225474
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.0003,
+      "value_lr": 0.001,
+      "gamma": 0.99,
+      "lam": 0.95
+    },
+    "score": 84.5711638242992
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.0003,
+      "value_lr": 0.001,
+      "gamma": 0.99,
+      "lam": 1.0
+    },
+    "score": 87.50830591796783
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.0003,
+      "value_lr": 0.01,
+      "gamma": 0.95,
+      "lam": 0.0
+    },
+    "score": 88.99155202403102
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.0003,
+      "value_lr": 0.01,
+      "gamma": 0.95,
+      "lam": 0.95
+    },
+    "score": 89.15566060524033
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.0003,
+      "value_lr": 0.01,
+      "gamma": 0.95,
+      "lam": 1.0
+    },
+    "score": 87.39221627941932
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.0003,
+      "value_lr": 0.01,
+      "gamma": 0.99,
+      "lam": 0.0
+    },
+    "score": 85.80669510162072
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.0003,
+      "value_lr": 0.01,
+      "gamma": 0.99,
+      "lam": 0.95
+    },
+    "score": 94.59120390423298
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.0003,
+      "value_lr": 0.01,
+      "gamma": 0.99,
+      "lam": 1.0
+    },
+    "score": 86.33953885311024
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.001,
+      "value_lr": 0.001,
+      "gamma": 0.95,
+      "lam": 0.0
+    },
+    "score": 58.45415109662434
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.001,
+      "value_lr": 0.001,
+      "gamma": 0.95,
+      "lam": 0.95
+    },
+    "score": 151.57974593431803
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.001,
+      "value_lr": 0.001,
+      "gamma": 0.95,
+      "lam": 1.0
+    },
+    "score": 168.37062095296582
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.001,
+      "value_lr": 0.001,
+      "gamma": 0.99,
+      "lam": 0.0
+    },
+    "score": 57.360112277145355
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.001,
+      "value_lr": 0.001,
+      "gamma": 0.99,
+      "lam": 0.95
+    },
+    "score": 145.3671599044925
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.001,
+      "value_lr": 0.001,
+      "gamma": 0.99,
+      "lam": 1.0
+    },
+    "score": 181.711129993247
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.001,
+      "value_lr": 0.01,
+      "gamma": 0.95,
+      "lam": 0.0
+    },
+    "score": 171.45661921981704
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.001,
+      "value_lr": 0.01,
+      "gamma": 0.95,
+      "lam": 0.95
+    },
+    "score": 169.59992830816392
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.001,
+      "value_lr": 0.01,
+      "gamma": 0.95,
+      "lam": 1.0
+    },
+    "score": 176.95496316919582
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.001,
+      "value_lr": 0.01,
+      "gamma": 0.99,
+      "lam": 0.0
+    },
+    "score": 187.0430353929587
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.001,
+      "value_lr": 0.01,
+      "gamma": 0.99,
+      "lam": 0.95
+    },
+    "score": 192.2364282966503
+  },
+  {
+    "config": {
+      "num_envs": 8,
+      "policy_lr": 0.001,
+      "value_lr": 0.01,
+      "gamma": 0.99,
+      "lam": 1.0
+    },
+    "score": 207.75523043381546
+  }
+]

@@ -1,0 +1,23 @@
+{
+  "environment": "Goto (BabyAI)",
+  "source": "Polychromic Objectives for Reinforcement Learning, Table 1",
+  "metrics_format": "(average episodic reward, success rate %)",
+  "reported": {
+    "pretrained_policy": {
+      "avg_reward": 0.246,
+      "success_rate_pct": 34.2
+    },
+    "reinforce": {
+      "avg_reward": 0.533,
+      "success_rate_pct": 73.0
+    },
+    "ppo": {
+      "avg_reward": 0.406,
+      "success_rate_pct": 46.2
+    },
+    "poly-ppo": {
+      "avg_reward": 0.575,
+      "success_rate_pct": 80.2
+    }
+  }
+}

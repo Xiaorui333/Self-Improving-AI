@@ -1,0 +1,63 @@
+{
+  "environment": "Goto (BabyAI)",
+  "env_id": "BabyAI-GoToObj-v0",
+  "paper_table1_reference": {
+    "pretrained_policy": {
+      "avg_reward": 0.246,
+      "success_rate_pct": 34.2
+    },
+    "reinforce": {
+      "avg_reward": 0.533,
+      "success_rate_pct": 73.0
+    },
+    "ppo": {
+      "avg_reward": 0.406,
+      "success_rate_pct": 46.2
+    },
+    "poly-ppo": {
+      "avg_reward": 0.575,
+      "success_rate_pct": 80.2
+    }
+  },
+  "local_replication": {
+    "reinforce": {
+      "avg_reward": 0.159,
+      "success_rate_pct": 25.0
+    },
+    "ppo": {
+      "avg_reward": 0.117,
+      "success_rate_pct": 21.0
+    },
+    "poly-ppo": {
+      "avg_reward": 0.288,
+      "success_rate_pct": 48.0
+    }
+  },
+  "config": {
+    "env_id": "BabyAI-GoToObj-v0",
+    "algo": "all",
+    "seed": 42,
+    "device": "cpu",
+    "updates": 80,
+    "episodes_per_update": 32,
+    "max_steps": 200,
+    "eval_episodes": 100,
+    "output": "results/goto_replication_local.json",
+    "gamma": 1.0,
+    "lam": 0.95,
+    "clip_eps": 0.2,
+    "ppo_epochs": 2,
+    "minibatch_size": 64,
+    "actor_lr": 1e-05,
+    "critic_lr": 0.0001,
+    "value_coef": 0.5,
+    "entropy_coef": 0.01,
+    "kl_coef": 0.01,
+    "max_grad_norm": 0.5,
+    "n_vines": 8,
+    "set_size": 4,
+    "num_sets": 4,
+    "rollout_states_per_seed": 2,
+    "window_w": 5
+  }
+}

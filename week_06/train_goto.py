@@ -13,12 +13,15 @@ from __future__ import annotations
 
 import argparse
 import copy
+import hashlib
 import json
+import pickle
 import random
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+import blosc
 import gymnasium as gym
 import minigrid  # noqa: F401  # side-effect: registers BabyAI envs
 import numpy as np
@@ -30,25 +33,11 @@ from torch.distributions import Categorical
 
 
 DEFAULT_ENV_ID = "BabyAI-GoToObj-v0"
+MODEL_MISSION_EMBED_DIM = 32
+MODEL_HIDDEN_DIM = 256
 
-# Mission vocabulary used in BabyAI text instructions.
-MISSION_VOCAB = [
-    "go",
-    "to",
-    "a",
-    "the",
-    "red",
-    "green",
-    "blue",
-    "purple",
-    "yellow",
-    "grey",
-    "box",
-    "ball",
-    "key",
-    "door",
-]
-TOKEN_TO_ID = {tok: i + 1 for i, tok in enumerate(MISSION_VOCAB)}  # 0 is PAD/UNK
+# Use a hashed token space so mission encoding is not constrained by a fixed word list.
+MISSION_HASH_VOCAB_SIZE = 4096
 PAD_ID = 0
 
 
@@ -70,16 +59,22 @@ class BabyAIObsWrapper(gym.ObservationWrapper):
                 "direction": spaces.Box(low=0.0, high=3.0, shape=(1,), dtype=np.float32),
                 "mission_tokens": spaces.Box(
                     low=0,
-                    high=len(TOKEN_TO_ID),
+                    high=MISSION_HASH_VOCAB_SIZE,
                     shape=(max_mission_len,),
                     dtype=np.int32,
                 ),
             }
         )
 
+    @staticmethod
+    def _hash_token(token: str) -> int:
+        digest = hashlib.md5(token.encode("utf-8")).hexdigest()
+        # Reserve 0 for padding.
+        return int(digest, 16) % MISSION_HASH_VOCAB_SIZE + 1
+
     def _encode_mission(self, mission: str) -> np.ndarray:
         toks = mission.lower().replace(",", " ").split()
-        ids = [TOKEN_TO_ID.get(t, PAD_ID) for t in toks[: self.max_mission_len]]
+        ids = [self._hash_token(t) for t in toks[: self.max_mission_len]]
         if len(ids) < self.max_mission_len:
             ids.extend([PAD_ID] * (self.max_mission_len - len(ids)))
         return np.asarray(ids, dtype=np.int32)
@@ -112,12 +107,28 @@ class ActorCritic(nn.Module):
         hidden_dim: int = 256,
     ):
         super().__init__()
+        self.mission_vocab_size = mission_vocab_size
+        self.hidden_dim = hidden_dim
+        self.mission_embed_dim = mission_embed_dim
         self.mission_emb = nn.Embedding(mission_vocab_size, mission_embed_dim, padding_idx=0)
-
-        image_dim = 7 * 7 * 3
+        self.mission_gru = nn.GRU(
+            input_size=mission_embed_dim,
+            hidden_size=mission_embed_dim,
+            num_layers=1,
+            batch_first=True,
+        )
+        self.image_encoder = nn.Sequential(
+            nn.Conv2d(3, 32, kernel_size=3, stride=1, padding=1),
+            nn.ReLU(),
+            nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1),
+            nn.ReLU(),
+            nn.Flatten(),
+            nn.Linear(64 * 7 * 7, hidden_dim),
+            nn.ReLU(),
+        )
         direction_dim = 1
         mission_dim = mission_embed_dim
-        trunk_in = image_dim + direction_dim + mission_dim
+        trunk_in = hidden_dim + direction_dim + mission_dim
 
         self.trunk = nn.Sequential(
             nn.Linear(trunk_in, hidden_dim),
@@ -130,12 +141,14 @@ class ActorCritic(nn.Module):
 
     def encode_obs(self, obs: dict[str, torch.Tensor]) -> torch.Tensor:
         image = obs["image"].float() / 255.0
-        image = image.view(image.shape[0], -1)
+        image = image.permute(0, 3, 1, 2)
+        image_feat = self.image_encoder(image)
         direction = obs["direction"].float()
         mission_tokens = obs["mission_tokens"].long()
-        mission_emb = self.mission_emb(mission_tokens)
-        mission_emb = mission_emb.mean(dim=1)
-        x = torch.cat([image, direction, mission_emb], dim=1)
+        mission_emb = self.mission_emb(mission_tokens)  # [B, T, E]
+        _, h_n = self.mission_gru(mission_emb)
+        mission_feat = h_n[-1]  # [B, E]
+        x = torch.cat([image_feat, direction, mission_feat], dim=1)
         return self.trunk(x)
 
     def forward(self, obs: dict[str, torch.Tensor]) -> tuple[torch.Tensor, torch.Tensor]:
@@ -209,14 +222,122 @@ def room_signature(env_unwrapped: Any, pos: tuple[int, int]) -> tuple[int, int]:
     return (int(x) // int(room_size), int(y) // int(room_size))
 
 
+def paper_success_reward(step_idx: int, horizon: int, decay_coeff: float = 0.5) -> float:
+    """Paper-aligned success reward: 1 - decay_coeff * t / H, clipped to [0, 1]."""
+    shaped = 1.0 - decay_coeff * (float(step_idx) / float(horizon))
+    return float(np.clip(shaped, 0.0, 1.0))
+
+
+def build_fixed_config_seeds(num_configs: int, seed: int) -> list[int]:
+    rng = np.random.default_rng(seed)
+    return [int(x) for x in rng.integers(0, 1_000_000_000, size=num_configs, endpoint=False)]
+
+
+def choose_reset_seed(
+    config_seeds: list[int] | None,
+    rng: np.random.Generator | None = None,
+) -> int:
+    if config_seeds and len(config_seeds) > 0:
+        if rng is None:
+            return int(random.choice(config_seeds))
+        return int(rng.choice(np.asarray(config_seeds, dtype=np.int64)))
+    return random.randint(0, 1_000_000_000)
+
+
+def encode_mission_tokens(mission: str, max_mission_len: int = 12) -> np.ndarray:
+    toks = mission.lower().replace(",", " ").split()
+    ids = [BabyAIObsWrapper._hash_token(t) for t in toks[:max_mission_len]]
+    if len(ids) < max_mission_len:
+        ids.extend([PAD_ID] * (max_mission_len - len(ids)))
+    return np.asarray(ids, dtype=np.int32)
+
+
+def encode_raw_observation(raw_obs: dict[str, Any], max_mission_len: int = 12) -> dict[str, np.ndarray]:
+    return {
+        "image": np.asarray(raw_obs["image"], dtype=np.uint8),
+        "direction": np.asarray([float(raw_obs["direction"])], dtype=np.float32),
+        "mission_tokens": encode_mission_tokens(str(raw_obs["mission"]), max_mission_len=max_mission_len),
+    }
+
+
+def _describe_demo_item(demo: Any) -> str:
+    if isinstance(demo, dict):
+        return f"dict keys={list(demo.keys())}"
+    if isinstance(demo, (list, tuple)):
+        return f"{type(demo).__name__}(len={len(demo)})"
+    return str(type(demo))
+
+
+def _maybe_unpack_images(images_obj: Any) -> np.ndarray:
+    if isinstance(images_obj, np.ndarray):
+        return images_obj
+    if isinstance(images_obj, (bytes, bytearray)):
+        return blosc.unpack_array(images_obj)
+    return np.asarray(images_obj)
+
+
+def _parse_demo_episode_to_samples(
+    demo: Any,
+    max_steps: int,
+) -> list[tuple[dict[str, np.ndarray], int]]:
+    """Parse one demo episode from multiple common BabyAI formats."""
+    # Format A (official legacy): (mission, packed_images, directions, actions)
+    if isinstance(demo, (tuple, list)) and len(demo) >= 4 and not (
+        len(demo) > 0 and isinstance(demo[0], dict)
+    ):
+        mission, images_obj, directions, actions = demo[0], demo[1], demo[2], demo[3]
+        images = _maybe_unpack_images(images_obj)
+        n = min(len(actions), len(directions), int(images.shape[0]), max_steps)
+        if n <= 0:
+            return []
+        out: list[tuple[dict[str, np.ndarray], int]] = []
+        for i in range(n):
+            raw_obs = {"image": images[i], "direction": directions[i], "mission": mission}
+            out.append((encode_raw_observation(raw_obs), int(actions[i])))
+        return out
+
+    # Format B (dict): supports raw or packed image key naming variants.
+    if isinstance(demo, dict):
+        mission = demo.get("mission")
+        directions = demo.get("directions")
+        actions = demo.get("actions")
+        images_obj = demo.get("images", demo.get("packed_images"))
+        if mission is None or directions is None or actions is None or images_obj is None:
+            raise ValueError(f"Missing required keys in demo dict: {_describe_demo_item(demo)}")
+        images = _maybe_unpack_images(images_obj)
+        n = min(len(actions), len(directions), int(images.shape[0]), max_steps)
+        if n <= 0:
+            return []
+        out: list[tuple[dict[str, np.ndarray], int]] = []
+        for i in range(n):
+            raw_obs = {"image": images[i], "direction": directions[i], "mission": mission}
+            out.append((encode_raw_observation(raw_obs), int(actions[i])))
+        return out
+
+    # Format C (already transformed): [(obs, action, done), ...]
+    if isinstance(demo, list) and len(demo) > 0 and isinstance(demo[0], (tuple, list)):
+        out: list[tuple[dict[str, np.ndarray], int]] = []
+        for tr in demo[:max_steps]:
+            if len(tr) < 2:
+                continue
+            obs_raw, action = tr[0], tr[1]
+            if not isinstance(obs_raw, dict):
+                raise ValueError("Transformed demo transition must have dict obs")
+            out.append((encode_raw_observation(obs_raw), int(action)))
+        return out
+
+    raise ValueError(f"Unsupported demo format: {_describe_demo_item(demo)}")
+
+
 def rollout_episode(
     env: gym.Env,
     model: ActorCritic,
     device: torch.device,
     gamma: float,
-    max_steps: int = 200,
+    max_steps: int = 100,
     reset_seed: int | None = None,
     action_prefix: list[int] | None = None,
+    reward_decay_coeff: float = 0.5,
 ) -> Episode:
     if reset_seed is None:
         reset_seed = random.randint(0, 1_000_000_000)
@@ -230,6 +351,7 @@ def rollout_episode(
     steps: list[StepRecord] = []
     done = False
     t = 0
+    success = False
 
     if action_prefix is None:
         action_prefix = []
@@ -255,11 +377,22 @@ def rollout_episode(
         action = int(action_t.item())
         next_obs, reward, terminated, truncated, _ = env.step(action)
         done = terminated or truncated
+        step_idx = t + 1
+        step_success = done and (float(reward) > 0.0)
+        if step_success:
+            success = True
+            shaped_reward = paper_success_reward(
+                step_idx=step_idx,
+                horizon=max_steps,
+                decay_coeff=reward_decay_coeff,
+            )
+        else:
+            shaped_reward = 0.0
         steps.append(
             StepRecord(
                 obs=copy.deepcopy(obs),
                 action=action,
-                reward=float(reward),
+                reward=float(shaped_reward),
                 done=done,
                 log_prob=float(log_prob_t.item()),
                 value=float(value_t.item()),
@@ -272,8 +405,6 @@ def rollout_episode(
         t += 1
 
     episodic_reward = float(sum(s.reward for s in steps))
-    # BabyAI success gives reward > 0 near end.
-    success = episodic_reward > 0.0
     return Episode(
         steps=steps,
         success=success,
@@ -468,6 +599,29 @@ def poly_diversity(visited_room_sets: list[set[tuple[int, int]]]) -> float:
     return float(len(signatures)) / float(len(visited_room_sets))
 
 
+def normalized_episode_return(ep: Episode, gamma: float) -> float:
+    """Return normalized trajectory return in [0, 1]."""
+    if not ep.steps:
+        return 0.0
+    ret0 = float(discounted_returns([s.reward for s in ep.steps], gamma=gamma)[0])
+    # Paper uses normalized reward and diversity terms for f_poly.
+    return float(np.clip(ret0, 0.0, 1.0))
+
+
+def clone_episode_with_poly_window(
+    ep: Episode,
+    rollout_local_idx: int,
+    window_w: int,
+    poly_adv: float,
+) -> Episode:
+    """Clone episode and apply one shared set-level poly advantage on a window."""
+    ep_copy = copy.deepcopy(ep)
+    for t, step in enumerate(ep_copy.steps):
+        if rollout_local_idx <= t <= rollout_local_idx + window_w:
+            step.poly_adv_override = float(poly_adv)
+    return ep_copy
+
+
 def poly_ppo_collect(
     env_id: str,
     model: ActorCritic,
@@ -478,13 +632,31 @@ def poly_ppo_collect(
     num_sets: int = 4,
     rollout_states_per_seed: int = 2,
     window_w: int = 5,
-    max_steps: int = 200,
+    max_steps: int = 100,
+    config_seeds: list[int] | None = None,
+    rng: np.random.Generator | None = None,
+    reward_decay_coeff: float = 0.5,
 ) -> list[Episode]:
-    """Collect episodes and assign Poly-PPO advantages using vine sampling."""
+    """Collect episodes and assign Poly-PPO advantages using vine sampling.
+
+    Uses per-set shared advantages:
+      A_hat(set) = f_poly(set) - mean_j f_poly(g_j)
+    and applies that same advantage to all actions in the set trajectories
+    within the rollout window, matching the paper's construction.
+    """
     env = make_env(env_id)
     seed_episodes: list[Episode] = []
     for _ in range(n_vines):
-        seed_ep = rollout_episode(env, model, device, gamma=gamma, max_steps=max_steps)
+        reset_seed = choose_reset_seed(config_seeds=config_seeds, rng=rng)
+        seed_ep = rollout_episode(
+            env,
+            model,
+            device,
+            gamma=gamma,
+            max_steps=max_steps,
+            reset_seed=reset_seed,
+            reward_decay_coeff=reward_decay_coeff,
+        )
         seed_episodes.append(seed_ep)
 
     all_eps: list[Episode] = list(seed_episodes)
@@ -506,47 +678,44 @@ def poly_ppo_collect(
                     max_steps=max_steps,
                     reset_seed=seed_ep.reset_seed,
                     action_prefix=prefix_actions,
+                    reward_decay_coeff=reward_decay_coeff,
                 )
                 branch_eps.append(branch_ep)
-                all_eps.append(branch_ep)
 
             if len(branch_eps) < set_size:
                 continue
 
-            # Build M trajectory sets and compute set scores.
+            # The rollout state for each branch trajectory is at local index 0:
+            # we reset to s_t and start recording from that state onward.
+            rollout_local_idx = 0
+
+            # Build M trajectory sets and compute f_poly(set).
             set_indices: list[list[int]] = []
             set_scores: list[float] = []
             all_idx = list(range(len(branch_eps)))
             for _ in range(num_sets):
                 chosen = random.sample(all_idx, set_size)
                 selected = [branch_eps[i] for i in chosen]
-                returns = [
-                    discounted_returns([s.reward for s in ep.steps], gamma=gamma)[0] if ep.steps else 0.0
-                    for ep in selected
-                ]
-                diversity = poly_diversity([ep.visited_rooms for ep in selected])
+                # f_poly(s, tau_1:n) = mean_i R(tau_i) * d(s, tau_1:n), both in [0, 1]
+                returns = [normalized_episode_return(ep, gamma=gamma) for ep in selected]
+                diversity = float(np.clip(poly_diversity([ep.visited_rooms for ep in selected]), 0.0, 1.0))
                 score = float(np.mean(returns)) * diversity
                 set_indices.append(chosen)
                 set_scores.append(score)
 
             baseline = float(np.mean(set_scores))
 
-            # Per-trajectory poly advantage from sets that include it.
-            per_traj_poly_adv = np.zeros(len(branch_eps), dtype=np.float32)
-            per_traj_count = np.zeros(len(branch_eps), dtype=np.int32)
+            # Per-set shared advantage assignment (no per-trajectory averaging).
             for chosen, score in zip(set_indices, set_scores):
+                shared_adv = float(score - baseline)
                 for idx in chosen:
-                    per_traj_poly_adv[idx] += float(score - baseline)
-                    per_traj_count[idx] += 1
-            for i in range(len(branch_eps)):
-                if per_traj_count[i] > 0:
-                    per_traj_poly_adv[i] /= float(per_traj_count[i])
-
-            for i, ep in enumerate(branch_eps):
-                poly_adv = float(per_traj_poly_adv[i])
-                for t, step in enumerate(ep.steps):
-                    if ridx <= t <= ridx + window_w:
-                        step.poly_adv_override = poly_adv
+                    ep_with_set_adv = clone_episode_with_poly_window(
+                        branch_eps[idx],
+                        rollout_local_idx=rollout_local_idx,
+                        window_w=window_w,
+                        poly_adv=shared_adv,
+                    )
+                    all_eps.append(ep_with_set_adv)
 
     env.close()
     return all_eps
@@ -599,26 +768,269 @@ def evaluate_policy(
     model: ActorCritic,
     device: torch.device,
     n_episodes: int = 100,
-    max_steps: int = 200,
+    max_steps: int = 100,
     base_seed: int = 10_000,
+    config_seeds: list[int] | None = None,
+    rollouts_per_config: int = 2,
+    reward_decay_coeff: float = 0.5,
 ) -> tuple[float, float]:
     env = make_env(env_id)
     rewards = []
     successes = []
+    eval_seeds: list[int]
+    if config_seeds and len(config_seeds) > 0:
+        eval_seeds = [int(s) for s in config_seeds for _ in range(rollouts_per_config)]
+    else:
+        eval_seeds = [base_seed + i for i in range(n_episodes)]
+
     with torch.no_grad():
-        for i in range(n_episodes):
+        for reset_seed in eval_seeds:
             ep = rollout_episode(
                 env,
                 model,
                 device,
                 gamma=1.0,
                 max_steps=max_steps,
-                reset_seed=base_seed + i,
+                reset_seed=reset_seed,
+                reward_decay_coeff=reward_decay_coeff,
             )
             rewards.append(ep.episodic_reward)
             successes.append(1.0 if ep.success else 0.0)
     env.close()
     return float(np.mean(rewards)), 100.0 * float(np.mean(successes))
+
+
+def load_official_demos(
+    demos_path: str,
+    max_steps: int,
+    reward_decay_coeff: float = 0.5,
+) -> tuple[list[list[tuple[dict[str, np.ndarray], int]]], dict[str, float]]:
+    """Load official BabyAI demos with format validation and compatibility parsing."""
+    with open(demos_path, "rb") as f:
+        demos = pickle.load(f)
+    if not isinstance(demos, list) or len(demos) == 0:
+        raise ValueError(f"Demo file is empty or not a list: {demos_path}")
+
+    first_demo = demos[0]
+    print(f"[demos] loaded {len(demos)} episodes from {demos_path}")
+    print(f"[demos] first item format: {_describe_demo_item(first_demo)}")
+
+    demo_episodes: list[list[tuple[dict[str, np.ndarray], int]]] = []
+    rewards: list[float] = []
+    successes: list[float] = []
+
+    for epi, demo in enumerate(demos):
+        try:
+            ep_samples = _parse_demo_episode_to_samples(demo, max_steps=max_steps)
+        except Exception as e:
+            raise ValueError(
+                f"Failed to parse demo episode #{epi} ({_describe_demo_item(demo)}): {e}"
+            ) from e
+        if len(ep_samples) == 0:
+            continue
+        demo_episodes.append(ep_samples)
+
+        # Official demos are successful expert trajectories.
+        rewards.append(
+            paper_success_reward(
+                step_idx=len(ep_samples),
+                horizon=max_steps,
+                decay_coeff=reward_decay_coeff,
+            )
+        )
+        successes.append(1.0)
+
+    stats = {
+        "demo_avg_reward": float(np.mean(rewards)) if rewards else 0.0,
+        "demo_success_rate_pct": 100.0 * (float(np.mean(successes)) if successes else 0.0),
+        "num_episodes": float(len(demo_episodes)),
+        "num_samples": float(sum(len(ep) for ep in demo_episodes)),
+        "source": "official_file",
+        "demos_path": demos_path,
+    }
+    return demo_episodes, stats
+
+
+def resolve_official_demos_paths(
+    env_id: str,
+    user_train_path: str,
+    user_valid_path: str,
+) -> tuple[Path, Path | None]:
+    """Resolve official train/valid demos following BabyAI naming conventions."""
+    if user_train_path:
+        train_path = Path(user_train_path).expanduser()
+        if not train_path.exists():
+            raise FileNotFoundError(f"Official train demos path does not exist: {train_path}")
+    else:
+        train_candidates = [
+            Path(f"demos/{env_id}.pkl"),
+            Path(f"../demos/{env_id}.pkl"),
+            Path(f"../../demos/{env_id}.pkl"),
+        ]
+        train_path = next((c.resolve() for c in train_candidates if c.exists()), None)
+        if train_path is None:
+            raise FileNotFoundError(
+                "Official demonstrations are required. Set --official-demos-path, "
+                f"or place file at demos/{env_id}.pkl."
+            )
+
+    if user_valid_path:
+        valid_path = Path(user_valid_path).expanduser()
+        if not valid_path.exists():
+            raise FileNotFoundError(f"Official valid demos path does not exist: {valid_path}")
+        return train_path.resolve(), valid_path.resolve()
+
+    valid_candidates = [
+        Path(f"demos/{env_id}_valid.pkl"),
+        Path(f"../demos/{env_id}_valid.pkl"),
+        Path(f"../../demos/{env_id}_valid.pkl"),
+    ]
+    valid_resolved = next((c.resolve() for c in valid_candidates if c.exists()), None)
+    return train_path.resolve(), valid_resolved
+
+
+def flatten_demo_episodes(
+    demo_episodes: list[list[tuple[dict[str, np.ndarray], int]]]
+) -> list[tuple[dict[str, np.ndarray], int]]:
+    return [sample for ep in demo_episodes for sample in ep]
+
+
+def split_demo_episodes(
+    demo_episodes: list[list[tuple[dict[str, np.ndarray], int]]],
+    train_ratio: float,
+    seed: int,
+) -> tuple[list[tuple[dict[str, np.ndarray], int]], list[tuple[dict[str, np.ndarray], int]]]:
+    """Split by episode first, then flatten into transition samples."""
+    idx = np.arange(len(demo_episodes))
+    rng = np.random.default_rng(seed)
+    rng.shuffle(idx)
+    cut = int(len(demo_episodes) * train_ratio)
+    train_idx = idx[:cut]
+    val_idx = idx[cut:]
+    train_eps = [demo_episodes[i] for i in train_idx]
+    val_eps = [demo_episodes[i] for i in val_idx]
+    train_samples = [sample for ep in train_eps for sample in ep]
+    val_samples = [sample for ep in val_eps for sample in ep]
+    return train_samples, val_samples
+
+
+def train_behavior_cloning(
+    model: ActorCritic,
+    device: torch.device,
+    train_samples: list[tuple[dict[str, np.ndarray], int]],
+    val_samples: list[tuple[dict[str, np.ndarray], int]],
+    epochs: int,
+    batch_size: int,
+    lr: float,
+    entropy_coef: float,
+) -> None:
+    """Behavior cloning pretraining with action cross-entropy + entropy regularization."""
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
+    for epoch in range(1, epochs + 1):
+        random.shuffle(train_samples)
+        epoch_losses: list[float] = []
+        for start in range(0, len(train_samples), batch_size):
+            batch = train_samples[start : start + batch_size]
+            if not batch:
+                continue
+            obs_batch = [b[0] for b in batch]
+            act_batch = torch.tensor([b[1] for b in batch], dtype=torch.long, device=device)
+            obs_t = batch_obs(obs_batch, device)
+            logits, _ = model.forward(obs_t)
+            ce = F.cross_entropy(logits, act_batch)
+            entropy = Categorical(logits=logits).entropy().mean()
+            loss = ce - entropy_coef * entropy
+            optimizer.zero_grad()
+            loss.backward()
+            nn.utils.clip_grad_norm_(model.parameters(), 0.5)
+            optimizer.step()
+            epoch_losses.append(float(loss.item()))
+
+        # Validation accuracy for sanity checking.
+        val_acc = 0.0
+        if val_samples:
+            with torch.no_grad():
+                correct = 0
+                total = 0
+                for start in range(0, len(val_samples), batch_size):
+                    batch = val_samples[start : start + batch_size]
+                    obs_batch = [b[0] for b in batch]
+                    act_batch = torch.tensor([b[1] for b in batch], dtype=torch.long, device=device)
+                    obs_t = batch_obs(obs_batch, device)
+                    logits, _ = model.forward(obs_t)
+                    pred = torch.argmax(logits, dim=-1)
+                    correct += int((pred == act_batch).sum().item())
+                    total += int(act_batch.numel())
+                if total > 0:
+                    val_acc = correct / total
+
+        mean_loss = float(np.mean(epoch_losses)) if epoch_losses else 0.0
+        print(
+            f"[BC] epoch {epoch}/{epochs}  loss={mean_loss:.4f}  "
+            f"val_acc={100.0 * val_acc:.1f}%"
+        )
+
+
+def save_pretrained_checkpoint(path: Path, model: ActorCritic, metadata: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "model_state_dict": model.state_dict(),
+        "metadata": metadata,
+    }
+    torch.save(payload, path)
+
+
+def _check_pretrained_metadata(metadata: dict[str, Any], expected: dict[str, Any]) -> None:
+    missing = [k for k in expected.keys() if k not in metadata]
+    mismatches = [(k, metadata.get(k), v) for k, v in expected.items() if metadata.get(k) != v]
+    if missing or mismatches:
+        parts = []
+        if missing:
+            parts.append(f"missing keys={missing}")
+        if mismatches:
+            parts.append(
+                "mismatches="
+                + ", ".join([f"{k}: ckpt={ck} expected={ex}" for k, ck, ex in mismatches])
+            )
+        raise ValueError("Pretrained checkpoint metadata mismatch: " + " | ".join(parts))
+
+
+def load_pretrained_checkpoint(
+    path: Path,
+    model: ActorCritic,
+    device: torch.device,
+    expected_metadata: dict[str, Any],
+) -> dict[str, Any]:
+    payload = torch.load(path, map_location=device)
+    metadata = payload.get("metadata", {})
+    if not isinstance(metadata, dict):
+        raise ValueError("Checkpoint metadata is missing or invalid.")
+    _check_pretrained_metadata(metadata, expected_metadata)
+    model.load_state_dict(payload["model_state_dict"], strict=True)
+    return metadata
+
+
+def make_actor_critic_optimizer(
+    model: ActorCritic,
+    lr_actor: float,
+    lr_critic: float,
+    lr_shared: float,
+) -> torch.optim.Optimizer:
+    shared_params = (
+        list(model.image_encoder.parameters())
+        + list(model.mission_emb.parameters())
+        + list(model.mission_gru.parameters())
+        + list(model.trunk.parameters())
+    )
+    actor_head_params = list(model.policy_head.parameters())
+    critic_params = list(model.value_head.parameters())
+    return torch.optim.Adam(
+        [
+            {"params": shared_params, "lr": lr_shared},
+            {"params": actor_head_params, "lr": lr_actor},
+            {"params": critic_params, "lr": lr_critic},
+        ]
+    )
 
 
 def train_reinforce(
@@ -630,21 +1042,34 @@ def train_reinforce(
     gamma: float,
     lr_actor: float,
     lr_critic: float,
+    lr_shared: float,
     value_coef: float,
     entropy_coef: float,
     max_grad_norm: float,
     max_steps: int,
+    config_seeds: list[int] | None = None,
+    seed: int = 42,
+    reward_decay_coeff: float = 0.5,
 ) -> None:
-    optimizer = torch.optim.Adam(
-        [
-            {"params": list(model.trunk.parameters()) + list(model.policy_head.parameters()), "lr": lr_actor},
-            {"params": list(model.value_head.parameters()) + list(model.mission_emb.parameters()), "lr": lr_critic},
-        ]
+    optimizer = make_actor_critic_optimizer(
+        model,
+        lr_actor=lr_actor,
+        lr_critic=lr_critic,
+        lr_shared=lr_shared,
     )
     env = make_env(env_id)
+    rng = np.random.default_rng(seed)
     for upd in range(1, updates + 1):
         episodes = [
-            rollout_episode(env, model, device, gamma=gamma, max_steps=max_steps)
+            rollout_episode(
+                env,
+                model,
+                device,
+                gamma=gamma,
+                max_steps=max_steps,
+                reset_seed=choose_reset_seed(config_seeds=config_seeds, rng=rng),
+                reward_decay_coeff=reward_decay_coeff,
+            )
             for _ in range(episodes_per_update)
         ]
         reinforce_update(
@@ -674,6 +1099,7 @@ def train_ppo(
     lam: float,
     lr_actor: float,
     lr_critic: float,
+    lr_shared: float,
     value_coef: float,
     entropy_coef: float,
     kl_coef: float,
@@ -682,17 +1108,29 @@ def train_ppo(
     minibatch_size: int,
     max_grad_norm: float,
     max_steps: int,
+    config_seeds: list[int] | None = None,
+    seed: int = 42,
+    reward_decay_coeff: float = 0.5,
 ) -> None:
-    optimizer = torch.optim.Adam(
-        [
-            {"params": list(model.trunk.parameters()) + list(model.policy_head.parameters()), "lr": lr_actor},
-            {"params": list(model.value_head.parameters()) + list(model.mission_emb.parameters()), "lr": lr_critic},
-        ]
+    optimizer = make_actor_critic_optimizer(
+        model,
+        lr_actor=lr_actor,
+        lr_critic=lr_critic,
+        lr_shared=lr_shared,
     )
     env = make_env(env_id)
+    rng = np.random.default_rng(seed)
     for upd in range(1, updates + 1):
         episodes = [
-            rollout_episode(env, model, device, gamma=gamma, max_steps=max_steps)
+            rollout_episode(
+                env,
+                model,
+                device,
+                gamma=gamma,
+                max_steps=max_steps,
+                reset_seed=choose_reset_seed(config_seeds=config_seeds, rng=rng),
+                reward_decay_coeff=reward_decay_coeff,
+            )
             for _ in range(episodes_per_update)
         ]
         batch = flatten_episodes_for_ppo(episodes, gamma=gamma, lam=lam)
@@ -725,6 +1163,7 @@ def train_poly_ppo(
     lam: float,
     lr_actor: float,
     lr_critic: float,
+    lr_shared: float,
     value_coef: float,
     entropy_coef: float,
     kl_coef: float,
@@ -738,13 +1177,17 @@ def train_poly_ppo(
     num_sets: int = 4,
     rollout_states_per_seed: int = 2,
     window_w: int = 5,
+    config_seeds: list[int] | None = None,
+    seed: int = 42,
+    reward_decay_coeff: float = 0.5,
 ) -> None:
-    optimizer = torch.optim.Adam(
-        [
-            {"params": list(model.trunk.parameters()) + list(model.policy_head.parameters()), "lr": lr_actor},
-            {"params": list(model.value_head.parameters()) + list(model.mission_emb.parameters()), "lr": lr_critic},
-        ]
+    optimizer = make_actor_critic_optimizer(
+        model,
+        lr_actor=lr_actor,
+        lr_critic=lr_critic,
+        lr_shared=lr_shared,
     )
+    rng = np.random.default_rng(seed)
     for upd in range(1, updates + 1):
         episodes = poly_ppo_collect(
             env_id=env_id,
@@ -757,6 +1200,9 @@ def train_poly_ppo(
             rollout_states_per_seed=rollout_states_per_seed,
             window_w=window_w,
             max_steps=max_steps,
+            config_seeds=config_seeds,
+            rng=rng,
+            reward_decay_coeff=reward_decay_coeff,
         )
         batch = flatten_poly_episodes_for_ppo(episodes, gamma=gamma, lam=lam)
         ppo_update(
@@ -784,9 +1230,9 @@ def build_model(env_id: str, device: torch.device) -> ActorCritic:
     env.close()
     model = ActorCritic(
         action_dim=action_dim,
-        mission_vocab_size=len(TOKEN_TO_ID) + 1,
-        mission_embed_dim=32,
-        hidden_dim=256,
+        mission_vocab_size=MISSION_HASH_VOCAB_SIZE + 1,
+        mission_embed_dim=MODEL_MISSION_EMBED_DIM,
+        hidden_dim=MODEL_HIDDEN_DIM,
     )
     return model.to(device)
 
@@ -799,9 +1245,21 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--device", type=str, default="cpu")
     parser.add_argument("--updates", type=int, default=80)
     parser.add_argument("--episodes-per-update", type=int, default=32)
-    parser.add_argument("--max-steps", type=int, default=200)
+    parser.add_argument("--max-steps", type=int, default=100)
     parser.add_argument("--eval-episodes", type=int, default=100)
+    parser.add_argument("--num-fixed-configs", type=int, default=50)
+    parser.add_argument("--eval-rollouts-per-config", type=int, default=2)
     parser.add_argument("--output", type=str, default="results/goto_replication_local.json")
+    parser.add_argument("--pretrained-ckpt", type=str, default="checkpoints/goto_pretrained.pt")
+    parser.add_argument("--force-pretrain", action="store_true")
+    parser.add_argument("--official-demos-path", type=str, default="")
+    parser.add_argument("--official-valid-demos-path", type=str, default="")
+    parser.add_argument("--pretrain-train-ratio", type=float, default=0.8)
+    parser.add_argument("--pretrain-epochs", type=int, default=10)
+    parser.add_argument("--pretrain-batch-size", type=int, default=128)
+    parser.add_argument("--pretrain-lr", type=float, default=5e-5)
+    parser.add_argument("--pretrain-entropy-coef", type=float, default=0.01)
+    parser.add_argument("--success-reward-decay", type=float, default=0.5)
 
     # Paper-inspired defaults (Table 3 / Appendix A).
     parser.add_argument("--gamma", type=float, default=1.0)
@@ -811,6 +1269,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--minibatch-size", type=int, default=64)
     parser.add_argument("--actor-lr", type=float, default=1e-5)
     parser.add_argument("--critic-lr", type=float, default=1e-4)
+    parser.add_argument("--shared-lr", type=float, default=1e-5)
     parser.add_argument("--value-coef", type=float, default=0.5)
     parser.add_argument("--entropy-coef", type=float, default=0.01)
     parser.add_argument("--kl-coef", type=float, default=0.01)
@@ -825,9 +1284,17 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def run_single(algo: str, args: argparse.Namespace, device: torch.device) -> dict[str, float]:
+def run_single(
+    algo: str,
+    args: argparse.Namespace,
+    device: torch.device,
+    pretrained_state_dict: dict[str, torch.Tensor] | None = None,
+    config_seeds: list[int] | None = None,
+) -> dict[str, float]:
     set_seed(args.seed)
     model = build_model(args.env_id, device)
+    if pretrained_state_dict is not None:
+        model.load_state_dict(pretrained_state_dict)
 
     if algo == "reinforce":
         train_reinforce(
@@ -839,10 +1306,14 @@ def run_single(algo: str, args: argparse.Namespace, device: torch.device) -> dic
             gamma=args.gamma,
             lr_actor=args.actor_lr,
             lr_critic=args.critic_lr,
+            lr_shared=args.shared_lr,
             value_coef=args.value_coef,
             entropy_coef=args.entropy_coef,
             max_grad_norm=args.max_grad_norm,
             max_steps=args.max_steps,
+            config_seeds=config_seeds,
+            seed=args.seed,
+            reward_decay_coeff=args.success_reward_decay,
         )
     elif algo == "ppo":
         train_ppo(
@@ -855,6 +1326,7 @@ def run_single(algo: str, args: argparse.Namespace, device: torch.device) -> dic
             lam=args.lam,
             lr_actor=args.actor_lr,
             lr_critic=args.critic_lr,
+            lr_shared=args.shared_lr,
             value_coef=args.value_coef,
             entropy_coef=args.entropy_coef,
             kl_coef=args.kl_coef,
@@ -863,6 +1335,9 @@ def run_single(algo: str, args: argparse.Namespace, device: torch.device) -> dic
             minibatch_size=args.minibatch_size,
             max_grad_norm=args.max_grad_norm,
             max_steps=args.max_steps,
+            config_seeds=config_seeds,
+            seed=args.seed,
+            reward_decay_coeff=args.success_reward_decay,
         )
     elif algo == "poly-ppo":
         train_poly_ppo(
@@ -874,6 +1349,7 @@ def run_single(algo: str, args: argparse.Namespace, device: torch.device) -> dic
             lam=args.lam,
             lr_actor=args.actor_lr,
             lr_critic=args.critic_lr,
+            lr_shared=args.shared_lr,
             value_coef=args.value_coef,
             entropy_coef=args.entropy_coef,
             kl_coef=args.kl_coef,
@@ -887,6 +1363,9 @@ def run_single(algo: str, args: argparse.Namespace, device: torch.device) -> dic
             num_sets=args.num_sets,
             rollout_states_per_seed=args.rollout_states_per_seed,
             window_w=args.window_w,
+            config_seeds=config_seeds,
+            seed=args.seed,
+            reward_decay_coeff=args.success_reward_decay,
         )
     else:
         raise ValueError(f"Unsupported algo: {algo}")
@@ -898,6 +1377,9 @@ def run_single(algo: str, args: argparse.Namespace, device: torch.device) -> dic
         n_episodes=args.eval_episodes,
         max_steps=args.max_steps,
         base_seed=args.seed + 123456,
+        config_seeds=config_seeds,
+        rollouts_per_config=args.eval_rollouts_per_config,
+        reward_decay_coeff=args.success_reward_decay,
     )
     return {
         "avg_reward": round(avg_reward, 3),
@@ -910,6 +1392,7 @@ def main() -> None:
     device = torch.device(args.device if args.device != "auto" else "cpu")
     out_path = Path(args.output)
     out_path.parent.mkdir(parents=True, exist_ok=True)
+    pretrained_ckpt_path = Path(args.pretrained_ckpt)
 
     paper_table1_goto = {
         "pretrained_policy": {"avg_reward": 0.246, "success_rate_pct": 34.2},
@@ -917,6 +1400,115 @@ def main() -> None:
         "ppo": {"avg_reward": 0.406, "success_rate_pct": 46.2},
         "poly-ppo": {"avg_reward": 0.575, "success_rate_pct": 80.2},
     }
+
+    set_seed(args.seed)
+    base_model = build_model(args.env_id, device)
+    pretrain_metadata: dict[str, Any] = {}
+    fixed_config_seeds = build_fixed_config_seeds(args.num_fixed_configs, seed=args.seed)
+    expected_ckpt_metadata = {
+        "env_id": args.env_id,
+        "max_steps": args.max_steps,
+        "mission_vocab_size": int(base_model.mission_emb.num_embeddings),
+        "hidden_dim": int(base_model.hidden_dim),
+        "official_demos_required": True,
+    }
+
+    if pretrained_ckpt_path.exists() and not args.force_pretrain:
+        try:
+            pretrain_metadata = load_pretrained_checkpoint(
+                pretrained_ckpt_path,
+                base_model,
+                device,
+                expected_metadata=expected_ckpt_metadata,
+            )
+        except ValueError as e:
+            raise ValueError(
+                f"{e}. Use --force-pretrain with a matching official demos file to regenerate checkpoint."
+            ) from e
+        print(f"Loaded pretrained base policy from {pretrained_ckpt_path}")
+    else:
+        print("\n=== Pretraining base policy with expert demonstrations ===")
+        demos_path, valid_demos_path = resolve_official_demos_paths(
+            env_id=args.env_id,
+            user_train_path=args.official_demos_path,
+            user_valid_path=args.official_valid_demos_path,
+        )
+        print(f"[demos] using official train demos file: {demos_path}")
+        demo_episodes, demo_stats = load_official_demos(
+            demos_path=str(demos_path),
+            max_steps=args.max_steps,
+            reward_decay_coeff=args.success_reward_decay,
+        )
+        if valid_demos_path is not None:
+            print(f"[demos] using official valid demos file: {valid_demos_path}")
+            valid_demo_episodes, valid_demo_stats = load_official_demos(
+                demos_path=str(valid_demos_path),
+                max_steps=args.max_steps,
+                reward_decay_coeff=args.success_reward_decay,
+            )
+            train_demos = flatten_demo_episodes(demo_episodes)
+            val_demos = flatten_demo_episodes(valid_demo_episodes)
+        else:
+            valid_demo_stats = None
+            train_demos, val_demos = split_demo_episodes(
+                demo_episodes, train_ratio=args.pretrain_train_ratio, seed=args.seed
+            )
+        print(
+            f"[BC] episodes={len(demo_episodes)}  train_samples={len(train_demos)}  "
+            f"val_samples={len(val_demos)}  "
+            f"demo_avg_reward={demo_stats['demo_avg_reward']:.3f}  "
+            f"demo_success={demo_stats['demo_success_rate_pct']:.1f}%"
+        )
+        train_behavior_cloning(
+            model=base_model,
+            device=device,
+            train_samples=train_demos,
+            val_samples=val_demos,
+            epochs=args.pretrain_epochs,
+            batch_size=args.pretrain_batch_size,
+            lr=args.pretrain_lr,
+            entropy_coef=args.pretrain_entropy_coef,
+        )
+        pretrain_metadata = {
+            "env_id": args.env_id,
+            "seed": args.seed,
+            "official_demos_path": str(demos_path),
+            "official_valid_demos_path": str(valid_demos_path) if valid_demos_path else None,
+            "official_demos_required": True,
+            "max_steps": args.max_steps,
+            "mission_vocab_size": int(base_model.mission_emb.num_embeddings),
+            "hidden_dim": int(base_model.hidden_dim),
+            "pretrain_train_ratio": args.pretrain_train_ratio,
+            "pretrain_epochs": args.pretrain_epochs,
+            "pretrain_batch_size": args.pretrain_batch_size,
+            "pretrain_lr": args.pretrain_lr,
+            "pretrain_entropy_coef": args.pretrain_entropy_coef,
+            "demo_stats": demo_stats,
+            "valid_demo_stats": valid_demo_stats,
+        }
+        save_pretrained_checkpoint(pretrained_ckpt_path, base_model, pretrain_metadata)
+        print(f"Saved pretrained base policy to {pretrained_ckpt_path}")
+
+    pre_avg_reward, pre_success = evaluate_policy(
+        env_id=args.env_id,
+        model=base_model,
+        device=device,
+        n_episodes=args.eval_episodes,
+        max_steps=args.max_steps,
+        base_seed=args.seed + 99999,
+        config_seeds=fixed_config_seeds,
+        rollouts_per_config=args.eval_rollouts_per_config,
+        reward_decay_coeff=args.success_reward_decay,
+    )
+    local_pretrained = {
+        "avg_reward": round(pre_avg_reward, 3),
+        "success_rate_pct": round(pre_success, 1),
+    }
+    print(
+        f"[pretrained] eval avg_reward={local_pretrained['avg_reward']:.3f}, "
+        f"success={local_pretrained['success_rate_pct']:.1f}%"
+    )
+    pretrained_state_dict = copy.deepcopy(base_model.state_dict())
 
     if args.algo == "all":
         algos = ["reinforce", "ppo", "poly-ppo"]
@@ -926,7 +1518,13 @@ def main() -> None:
     local_results: dict[str, dict[str, float]] = {}
     for algo in algos:
         print(f"\n=== Training {algo} on {args.env_id} ===")
-        local_results[algo] = run_single(algo, args, device)
+        local_results[algo] = run_single(
+            algo,
+            args,
+            device,
+            pretrained_state_dict=pretrained_state_dict,
+            config_seeds=fixed_config_seeds,
+        )
         print(
             f"[{algo}] eval avg_reward={local_results[algo]['avg_reward']:.3f}, "
             f"success={local_results[algo]['success_rate_pct']:.1f}%"
@@ -936,7 +1534,20 @@ def main() -> None:
         "environment": "Goto (BabyAI)",
         "env_id": args.env_id,
         "paper_table1_reference": paper_table1_goto,
+        "local_pretrained_policy": local_pretrained,
         "local_replication": local_results,
+        "pretraining": {
+            "checkpoint": str(pretrained_ckpt_path),
+            "metadata": pretrain_metadata,
+        },
+        "rlft_setting": {
+            "num_fixed_configurations": args.num_fixed_configs,
+            "fixed_config_seeds": fixed_config_seeds,
+            "episode_horizon": args.max_steps,
+            "success_reward_formula": "1 - c*t/H, fail=0",
+            "success_reward_decay_c": args.success_reward_decay,
+            "eval_rollouts_per_config": args.eval_rollouts_per_config,
+        },
         "config": vars(args),
     }
     out_path.write_text(json.dumps(payload, indent=2))

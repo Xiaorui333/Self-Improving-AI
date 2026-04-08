@@ -2,3 +2,4 @@ gymnasium
 minigrid
 torch
 numpy<2
+blosc

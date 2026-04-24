@@ -1,0 +1,8 @@
+results/
+__pycache__/
+*.pyc
+*.log
+.DS_Store
+benchmarks/
+agentflow/__pycache__/
+*.egg-info/

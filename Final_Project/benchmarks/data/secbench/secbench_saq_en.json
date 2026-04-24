@@ -1,0 +1,212 @@
+[
+  {
+    "pid": 0,
+    "query": "What is a SQL injection attack?",
+    "answer": "A SQL injection attack involves inserting malicious SQL code into application queries to manipulate databases.",
+    "domain": "general_security",
+    "level": "basic"
+  },
+  {
+    "pid": 1,
+    "query": "What is the purpose of a firewall?",
+    "answer": "A firewall monitors and controls incoming and outgoing network traffic based on security rules.",
+    "domain": "general_security",
+    "level": "basic"
+  },
+  {
+    "pid": 2,
+    "query": "What is cross-site scripting (XSS)?",
+    "answer": "XSS is a vulnerability that allows attackers to inject malicious scripts into web pages viewed by other users.",
+    "domain": "general_security",
+    "level": "basic"
+  },
+  {
+    "pid": 3,
+    "query": "What is a buffer overflow vulnerability?",
+    "answer": "A buffer overflow occurs when a program writes data beyond the allocated memory buffer, potentially allowing code execution.",
+    "domain": "general_security",
+    "level": "basic"
+  },
+  {
+    "pid": 4,
+    "query": "What is the difference between symmetric and asymmetric encryption?",
+    "answer": "Symmetric uses one shared key; asymmetric uses a public-private key pair.",
+    "domain": "general_security",
+    "level": "basic"
+  },
+  {
+    "pid": 5,
+    "query": "What is a zero-day vulnerability?",
+    "answer": "A zero-day is a software vulnerability unknown to the vendor with no available patch.",
+    "domain": "general_security",
+    "level": "basic"
+  },
+  {
+    "pid": 6,
+    "query": "What is social engineering in cybersecurity?",
+    "answer": "Social engineering manipulates people into divulging confidential information or performing actions that compromise security.",
+    "domain": "general_security",
+    "level": "basic"
+  },
+  {
+    "pid": 7,
+    "query": "What is a DDoS attack?",
+    "answer": "A Distributed Denial of Service attack overwhelms a target with traffic from multiple sources to make it unavailable.",
+    "domain": "general_security",
+    "level": "basic"
+  },
+  {
+    "pid": 8,
+    "query": "What is the principle of least privilege?",
+    "answer": "Users should only have the minimum access rights necessary to perform their job functions.",
+    "domain": "general_security",
+    "level": "basic"
+  },
+  {
+    "pid": 9,
+    "query": "What is a man-in-the-middle attack?",
+    "answer": "An attacker secretly intercepts and potentially alters communication between two parties.",
+    "domain": "general_security",
+    "level": "basic"
+  },
+  {
+    "pid": 10,
+    "query": "What is ransomware?",
+    "answer": "Malware that encrypts victim's files and demands payment for the decryption key.",
+    "domain": "general_security",
+    "level": "basic"
+  },
+  {
+    "pid": 11,
+    "query": "What is CVE?",
+    "answer": "Common Vulnerabilities and Exposures is a system for identifying and cataloging publicly known cybersecurity vulnerabilities.",
+    "domain": "general_security",
+    "level": "basic"
+  },
+  {
+    "pid": 12,
+    "query": "What is penetration testing?",
+    "answer": "Authorized simulated attack on a computer system to evaluate its security.",
+    "domain": "general_security",
+    "level": "basic"
+  },
+  {
+    "pid": 13,
+    "query": "What is phishing?",
+    "answer": "A fraudulent attempt to obtain sensitive information by disguising as a trustworthy entity in electronic communication.",
+    "domain": "general_security",
+    "level": "basic"
+  },
+  {
+    "pid": 14,
+    "query": "What is a VPN and how does it enhance security?",
+    "answer": "A Virtual Private Network creates an encrypted tunnel for data transmission, protecting privacy and data integrity.",
+    "domain": "general_security",
+    "level": "basic"
+  },
+  {
+    "pid": 15,
+    "query": "What is CSRF and how can it be prevented?",
+    "answer": "Cross-Site Request Forgery tricks a user's browser into making unwanted requests. Prevention includes CSRF tokens and SameSite cookies.",
+    "domain": "general_security",
+    "level": "basic"
+  },
+  {
+    "pid": 16,
+    "query": "Explain the OWASP Top 10.",
+    "answer": "The OWASP Top 10 lists the most critical web application security risks including injection, broken authentication, sensitive data exposure, XXE, broken access control, security misconfiguration, XSS, insecure deserialization, using components with known vulnerabilities, and insufficient logging.",
+    "domain": "general_security",
+    "level": "basic"
+  },
+  {
+    "pid": 17,
+    "query": "What is TLS and why is it important?",
+    "answer": "Transport Layer Security encrypts data in transit between client and server, preventing eavesdropping and tampering.",
+    "domain": "general_security",
+    "level": "basic"
+  },
+  {
+    "pid": 18,
+    "query": "What is a rootkit?",
+    "answer": "A rootkit is a collection of software tools that enables unauthorized access to a computer while hiding its presence from detection.",
+    "domain": "general_security",
+    "level": "basic"
+  },
+  {
+    "pid": 19,
+    "query": "What is the CIA triad in information security?",
+    "answer": "Confidentiality, Integrity, and Availability are the three core principles of information security.",
+    "domain": "general_security",
+    "level": "basic"
+  },
+  {
+    "pid": 20,
+    "query": "What is a honeypot in cybersecurity?",
+    "answer": "A honeypot is a decoy system designed to attract attackers and study their methods.",
+    "domain": "general_security",
+    "level": "basic"
+  },
+  {
+    "pid": 21,
+    "query": "Explain the difference between IDS and IPS.",
+    "answer": "An Intrusion Detection System monitors and alerts on suspicious activity; an Intrusion Prevention System actively blocks threats.",
+    "domain": "general_security",
+    "level": "basic"
+  },
+  {
+    "pid": 22,
+    "query": "What is multi-factor authentication?",
+    "answer": "MFA requires two or more verification factors: something you know, something you have, or something you are.",
+    "domain": "general_security",
+    "level": "basic"
+  },
+  {
+    "pid": 23,
+    "query": "What is a supply chain attack?",
+    "answer": "An attack that targets less-secure elements in the supply chain to compromise the final product or organization.",
+    "domain": "general_security",
+    "level": "basic"
+  },
+  {
+    "pid": 24,
+    "query": "What is the MITRE ATT&CK framework?",
+    "answer": "A knowledge base of adversary tactics and techniques based on real-world observations, used for threat modeling and defense planning.",
+    "domain": "general_security",
+    "level": "basic"
+  },
+  {
+    "pid": 25,
+    "query": "What is a race condition vulnerability?",
+    "answer": "A race condition occurs when the behavior of software depends on the timing of events, potentially allowing exploitation.",
+    "domain": "general_security",
+    "level": "basic"
+  },
+  {
+    "pid": 26,
+    "query": "What is certificate pinning?",
+    "answer": "Certificate pinning restricts which certificates are trusted for a connection, preventing man-in-the-middle attacks with forged certificates.",
+    "domain": "general_security",
+    "level": "basic"
+  },
+  {
+    "pid": 27,
+    "query": "What is a web application firewall (WAF)?",
+    "answer": "A WAF filters HTTP traffic between a web application and the internet, protecting against XSS, SQL injection, and other attacks.",
+    "domain": "general_security",
+    "level": "basic"
+  },
+  {
+    "pid": 28,
+    "query": "What is privilege escalation?",
+    "answer": "Privilege escalation exploits a vulnerability to gain elevated access beyond what is normally authorized.",
+    "domain": "general_security",
+    "level": "basic"
+  },
+  {
+    "pid": 29,
+    "query": "What is SIEM?",
+    "answer": "Security Information and Event Management combines security information management and security event management to provide real-time analysis of security alerts.",
+    "domain": "general_security",
+    "level": "basic"
+  }
+]

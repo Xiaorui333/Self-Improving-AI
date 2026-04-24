@@ -1,0 +1,57 @@
+{
+  "bamboogle": {
+    "em": 0.4,
+    "f1": 0.4873438210924032,
+    "n_samples": 20,
+    "elapsed_s": 5527.9
+  },
+  "2wiki": {
+    "em": 0.0,
+    "f1": 0.03803568820972701,
+    "n_samples": 20,
+    "elapsed_s": 3614.4
+  },
+  "hotpotqa": {
+    "em": 0.15,
+    "f1": 0.20475437979432556,
+    "n_samples": 20,
+    "elapsed_s": 1993.7
+  },
+  "musique": {
+    "em": 0.0,
+    "f1": 0.0,
+    "n_samples": 20,
+    "elapsed_s": 2.3
+  },
+  "gaia": {
+    "em": 0.0,
+    "f1": 0.0,
+    "n_samples": 20,
+    "elapsed_s": 2.0
+  },
+  "aime24": {
+    "accuracy": 0.0,
+    "n_samples": 20,
+    "elapsed_s": 2.3
+  },
+  "amc23": {
+    "accuracy": 0.0,
+    "n_samples": 20,
+    "elapsed_s": 2.1
+  },
+  "gameof24": {
+    "accuracy": 0.0,
+    "n_samples": 20,
+    "elapsed_s": 1.9
+  },
+  "gpqa": {
+    "accuracy": 0.0,
+    "n_samples": 20,
+    "elapsed_s": 2.2
+  },
+  "medqa": {
+    "accuracy": 0.0,
+    "n_samples": 20,
+    "elapsed_s": 1.9
+  }
+}

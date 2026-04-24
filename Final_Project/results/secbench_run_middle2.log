@@ -1,0 +1,272 @@
+SecBench: loaded 30 cached samples
+
+============================================================
+SecBench: qwen3.5-2b
+============================================================
+  [qwen3.5-2b] SecBench 1/10: What is a honeypot in cybersecurity?...
+    ERROR (attempt 1/4): Connection error. — retrying in 5s
+    ERROR (attempt 2/4): Connection error. — retrying in 10s
+    ERROR (attempt 3/4): Connection error. — retrying in 20s
+    ERROR (attempt 4/4): Connection error. — retrying in 40s
+    FAILED after 4 attempts
+  [qwen3.5-2b] SecBench 2/10: What is a buffer overflow vulnerability?...
+    ERROR (attempt 1/4): Connection error. — retrying in 5s
+    ERROR (attempt 2/4): Connection error. — retrying in 10s
+    ERROR (attempt 3/4): Connection error. — retrying in 20s
+    ERROR (attempt 4/4): Connection error. — retrying in 40s
+    FAILED after 4 attempts
+  [qwen3.5-2b] SecBench 3/10: What is a SQL injection attack?...
+    ERROR (attempt 1/4): Connection error. — retrying in 5s
+    ERROR (attempt 2/4): Connection error. — retrying in 10s
+    ERROR (attempt 3/4): Connection error. — retrying in 20s
+    ERROR (attempt 4/4): Connection error. — retrying in 40s
+    FAILED after 4 attempts
+  [qwen3.5-2b] SecBench 4/10: What is a supply chain attack?...
+    ERROR (attempt 1/4): Connection error. — retrying in 5s
+    ERROR (attempt 2/4): Connection error. — retrying in 10s
+    ERROR (attempt 3/4): Connection error. — retrying in 20s
+    ERROR (attempt 4/4): Connection error. — retrying in 40s
+    FAILED after 4 attempts
+  [qwen3.5-2b] SecBench 5/10: What is the principle of least privilege?...
+    ERROR (attempt 1/4): Connection error. — retrying in 5s
+    ERROR (attempt 2/4): Connection error. — retrying in 10s
+    ERROR (attempt 3/4): Connection error. — retrying in 20s
+    ERROR (attempt 4/4): Connection error. — retrying in 40s
+    FAILED after 4 attempts
+  [qwen3.5-2b] SecBench 6/10: What is a DDoS attack?...
+    ERROR (attempt 1/4): Connection error. — retrying in 5s
+    ERROR (attempt 2/4): Connection error. — retrying in 10s
+    ERROR (attempt 3/4): Connection error. — retrying in 20s
+    ERROR (attempt 4/4): Connection error. — retrying in 40s
+    FAILED after 4 attempts
+  [qwen3.5-2b] SecBench 7/10: What is the MITRE ATT&CK framework?...
+    ERROR (attempt 1/4): Connection error. — retrying in 5s
+    ERROR (attempt 2/4): Connection error. — retrying in 10s
+    ERROR (attempt 3/4): Connection error. — retrying in 20s
+    ERROR (attempt 4/4): Connection error. — retrying in 40s
+    FAILED after 4 attempts
+  [qwen3.5-2b] SecBench 8/10: What is the difference between symmetric and asymmetric encr...
+    ERROR (attempt 1/4): Connection error. — retrying in 5s
+    ERROR (attempt 2/4): Connection error. — retrying in 10s
+    ERROR (attempt 3/4): Connection error. — retrying in 20s
+    ERROR (attempt 4/4): Connection error. — retrying in 40s
+    FAILED after 4 attempts
+  [qwen3.5-2b] SecBench 9/10: What is privilege escalation?...
+    ERROR (attempt 1/4): Connection error. — retrying in 5s
+    ERROR (attempt 2/4): Connection error. — retrying in 10s
+    ERROR (attempt 3/4): Connection error. — retrying in 20s
+    ERROR (attempt 4/4): Connection error. — retrying in 40s
+    FAILED after 4 attempts
+  [qwen3.5-2b] SecBench 10/10: What is TLS and why is it important?...
+    ERROR (attempt 1/4): Connection error. — retrying in 5s
+    ERROR (attempt 2/4): Connection error. — retrying in 10s
+    ERROR (attempt 3/4): Connection error. — retrying in 20s
+    ERROR (attempt 4/4): Connection error. — retrying in 40s
+    FAILED after 4 attempts
+  [qwen3.5-2b] SecBench score: 0.000 (10 samples)
+
+============================================================
+SecBench: qwen3.5-4b
+============================================================
+  [qwen3.5-4b] SecBench 1/10: What is a honeypot in cybersecurity?...
+    ERROR (attempt 1/4): Connection error. — retrying in 5s
+    ERROR (attempt 2/4): Connection error. — retrying in 10s
+    ERROR (attempt 3/4): Connection error. — retrying in 20s
+    ERROR (attempt 4/4): Connection error. — retrying in 40s
+    FAILED after 4 attempts
+  [qwen3.5-4b] SecBench 2/10: What is a buffer overflow vulnerability?...
+    ERROR (attempt 1/4): Connection error. — retrying in 5s
+    ERROR (attempt 2/4): Connection error. — retrying in 10s
+    ERROR (attempt 3/4): Connection error. — retrying in 20s
+    ERROR (attempt 4/4): Connection error. — retrying in 40s
+    FAILED after 4 attempts
+  [qwen3.5-4b] SecBench 3/10: What is a SQL injection attack?...
+    ERROR (attempt 1/4): Connection error. — retrying in 5s
+    ERROR (attempt 2/4): Connection error. — retrying in 10s
+    ERROR (attempt 3/4): Connection error. — retrying in 20s
+    ERROR (attempt 4/4): Connection error. — retrying in 40s
+    FAILED after 4 attempts
+  [qwen3.5-4b] SecBench 4/10: What is a supply chain attack?...
+    ERROR (attempt 1/4): Connection error. — retrying in 5s
+    ERROR (attempt 2/4): Connection error. — retrying in 10s
+    ERROR (attempt 3/4): Connection error. — retrying in 20s
+    ERROR (attempt 4/4): Connection error. — retrying in 40s
+    FAILED after 4 attempts
+  [qwen3.5-4b] SecBench 5/10: What is the principle of least privilege?...
+    ERROR (attempt 1/4): Connection error. — retrying in 5s
+    ERROR (attempt 2/4): Connection error. — retrying in 10s
+    ERROR (attempt 3/4): Connection error. — retrying in 20s
+    ERROR (attempt 4/4): Connection error. — retrying in 40s
+    FAILED after 4 attempts
+  [qwen3.5-4b] SecBench 6/10: What is a DDoS attack?...
+    ERROR (attempt 1/4): Connection error. — retrying in 5s
+    ERROR (attempt 2/4): Connection error. — retrying in 10s
+    ERROR (attempt 3/4): Connection error. — retrying in 20s
+    ERROR (attempt 4/4): Connection error. — retrying in 40s
+    FAILED after 4 attempts
+  [qwen3.5-4b] SecBench 7/10: What is the MITRE ATT&CK framework?...
+    ERROR (attempt 1/4): Connection error. — retrying in 5s
+    ERROR (attempt 2/4): Connection error. — retrying in 10s
+    ERROR (attempt 3/4): Connection error. — retrying in 20s
+    ERROR (attempt 4/4): Connection error. — retrying in 40s
+    FAILED after 4 attempts
+  [qwen3.5-4b] SecBench 8/10: What is the difference between symmetric and asymmetric encr...
+    ERROR (attempt 1/4): Connection error. — retrying in 5s
+    ERROR (attempt 2/4): Connection error. — retrying in 10s
+    ERROR (attempt 3/4): Connection error. — retrying in 20s
+    ERROR (attempt 4/4): Connection error. — retrying in 40s
+    FAILED after 4 attempts
+  [qwen3.5-4b] SecBench 9/10: What is privilege escalation?...
+    ERROR (attempt 1/4): Connection error. — retrying in 5s
+    ERROR (attempt 2/4): Connection error. — retrying in 10s
+    ERROR (attempt 3/4): Connection error. — retrying in 20s
+    ERROR (attempt 4/4): Connection error. — retrying in 40s
+    FAILED after 4 attempts
+  [qwen3.5-4b] SecBench 10/10: What is TLS and why is it important?...
+    ERROR (attempt 1/4): Connection error. — retrying in 5s
+    ERROR (attempt 2/4): Connection error. — retrying in 10s
+    ERROR (attempt 3/4): Connection error. — retrying in 20s
+    ERROR (attempt 4/4): Connection error. — retrying in 40s
+    FAILED after 4 attempts
+  [qwen3.5-4b] SecBench score: 0.000 (10 samples)
+
+============================================================
+SecBench: qwen3.5-9b
+============================================================
+  [qwen3.5-9b] SecBench 1/10: What is a honeypot in cybersecurity?...
+    ERROR (attempt 1/4): Connection error. — retrying in 5s
+    ERROR (attempt 2/4): Connection error. — retrying in 10s
+    ERROR (attempt 3/4): Connection error. — retrying in 20s
+    ERROR (attempt 4/4): Connection error. — retrying in 40s
+    FAILED after 4 attempts
+  [qwen3.5-9b] SecBench 2/10: What is a buffer overflow vulnerability?...
+    ERROR (attempt 1/4): Connection error. — retrying in 5s
+    ERROR (attempt 2/4): Connection error. — retrying in 10s
+    ERROR (attempt 3/4): Connection error. — retrying in 20s
+    ERROR (attempt 4/4): Connection error. — retrying in 40s
+    FAILED after 4 attempts
+  [qwen3.5-9b] SecBench 3/10: What is a SQL injection attack?...
+    ERROR (attempt 1/4): Connection error. — retrying in 5s
+    ERROR (attempt 2/4): Connection error. — retrying in 10s
+    ERROR (attempt 3/4): Connection error. — retrying in 20s
+    ERROR (attempt 4/4): Connection error. — retrying in 40s
+    FAILED after 4 attempts
+  [qwen3.5-9b] SecBench 4/10: What is a supply chain attack?...
+    ERROR (attempt 1/4): Connection error. — retrying in 5s
+    ERROR (attempt 2/4): Connection error. — retrying in 10s
+    ERROR (attempt 3/4): Connection error. — retrying in 20s
+    ERROR (attempt 4/4): Connection error. — retrying in 40s
+    FAILED after 4 attempts
+  [qwen3.5-9b] SecBench 5/10: What is the principle of least privilege?...
+    ERROR (attempt 1/4): Connection error. — retrying in 5s
+    ERROR (attempt 2/4): Connection error. — retrying in 10s
+    ERROR (attempt 3/4): Connection error. — retrying in 20s
+    ERROR (attempt 4/4): Connection error. — retrying in 40s
+    FAILED after 4 attempts
+  [qwen3.5-9b] SecBench 6/10: What is a DDoS attack?...
+    ERROR (attempt 1/4): Connection error. — retrying in 5s
+    ERROR (attempt 2/4): Connection error. — retrying in 10s
+    ERROR (attempt 3/4): Connection error. — retrying in 20s
+    ERROR (attempt 4/4): Connection error. — retrying in 40s
+    FAILED after 4 attempts
+  [qwen3.5-9b] SecBench 7/10: What is the MITRE ATT&CK framework?...
+    ERROR (attempt 1/4): Connection error. — retrying in 5s
+    ERROR (attempt 2/4): Connection error. — retrying in 10s
+    ERROR (attempt 3/4): Connection error. — retrying in 20s
+    ERROR (attempt 4/4): Connection error. — retrying in 40s
+    FAILED after 4 attempts
+  [qwen3.5-9b] SecBench 8/10: What is the difference between symmetric and asymmetric encr...
+    ERROR (attempt 1/4): Connection error. — retrying in 5s
+    ERROR (attempt 2/4): Connection error. — retrying in 10s
+    ERROR (attempt 3/4): Connection error. — retrying in 20s
+    ERROR (attempt 4/4): Connection error. — retrying in 40s
+    FAILED after 4 attempts
+  [qwen3.5-9b] SecBench 9/10: What is privilege escalation?...
+    ERROR (attempt 1/4): Connection error. — retrying in 5s
+    ERROR (attempt 2/4): Connection error. — retrying in 10s
+    ERROR (attempt 3/4): Connection error. — retrying in 20s
+    ERROR (attempt 4/4): Connection error. — retrying in 40s
+    FAILED after 4 attempts
+  [qwen3.5-9b] SecBench 10/10: What is TLS and why is it important?...
+    ERROR (attempt 1/4): Connection error. — retrying in 5s
+    ERROR (attempt 2/4): Connection error. — retrying in 10s
+    ERROR (attempt 3/4): Connection error. — retrying in 20s
+    ERROR (attempt 4/4): Connection error. — retrying in 40s
+    FAILED after 4 attempts
+  [qwen3.5-9b] SecBench score: 0.000 (10 samples)
+
+============================================================
+SecBench: qwen3.5-27b
+============================================================
+  [qwen3.5-27b] SecBench 1/10: What is a honeypot in cybersecurity?...
+    ERROR (attempt 1/4): Connection error. — retrying in 5s
+    ERROR (attempt 2/4): Connection error. — retrying in 10s
+    ERROR (attempt 3/4): Connection error. — retrying in 20s
+    ERROR (attempt 4/4): Connection error. — retrying in 40s
+    FAILED after 4 attempts
+  [qwen3.5-27b] SecBench 2/10: What is a buffer overflow vulnerability?...
+    ERROR (attempt 1/4): Connection error. — retrying in 5s
+    ERROR (attempt 2/4): Connection error. — retrying in 10s
+    ERROR (attempt 3/4): Connection error. — retrying in 20s
+    ERROR (attempt 4/4): Connection error. — retrying in 40s
+    FAILED after 4 attempts
+  [qwen3.5-27b] SecBench 3/10: What is a SQL injection attack?...
+    ERROR (attempt 1/4): Connection error. — retrying in 5s
+    ERROR (attempt 2/4): Connection error. — retrying in 10s
+    ERROR (attempt 3/4): Connection error. — retrying in 20s
+    ERROR (attempt 4/4): Connection error. — retrying in 40s
+    FAILED after 4 attempts
+  [qwen3.5-27b] SecBench 4/10: What is a supply chain attack?...
+    ERROR (attempt 1/4): Connection error. — retrying in 5s
+    ERROR (attempt 2/4): Connection error. — retrying in 10s
+    ERROR (attempt 3/4): Connection error. — retrying in 20s
+    ERROR (attempt 4/4): Connection error. — retrying in 40s
+    FAILED after 4 attempts
+  [qwen3.5-27b] SecBench 5/10: What is the principle of least privilege?...
+    ERROR (attempt 1/4): Connection error. — retrying in 5s
+    ERROR (attempt 2/4): Connection error. — retrying in 10s
+    ERROR (attempt 3/4): Connection error. — retrying in 20s
+    ERROR (attempt 4/4): Connection error. — retrying in 40s
+    FAILED after 4 attempts
+  [qwen3.5-27b] SecBench 6/10: What is a DDoS attack?...
+    ERROR (attempt 1/4): Connection error. — retrying in 5s
+    ERROR (attempt 2/4): Connection error. — retrying in 10s
+    ERROR (attempt 3/4): Connection error. — retrying in 20s
+    ERROR (attempt 4/4): Connection error. — retrying in 40s
+    FAILED after 4 attempts
+  [qwen3.5-27b] SecBench 7/10: What is the MITRE ATT&CK framework?...
+    ERROR (attempt 1/4): Connection error. — retrying in 5s
+    ERROR (attempt 2/4): Connection error. — retrying in 10s
+    ERROR (attempt 3/4): Connection error. — retrying in 20s
+    ERROR (attempt 4/4): Connection error. — retrying in 40s
+    FAILED after 4 attempts
+  [qwen3.5-27b] SecBench 8/10: What is the difference between symmetric and asymmetric encr...
+    ERROR (attempt 1/4): Connection error. — retrying in 5s
+    ERROR (attempt 2/4): Connection error. — retrying in 10s
+    ERROR (attempt 3/4): Connection error. — retrying in 20s
+    ERROR (attempt 4/4): Connection error. — retrying in 40s
+    FAILED after 4 attempts
+  [qwen3.5-27b] SecBench 9/10: What is privilege escalation?...
+    ERROR (attempt 1/4): Connection error. — retrying in 5s
+    ERROR (attempt 2/4): Connection error. — retrying in 10s
+    ERROR (attempt 3/4): Connection error. — retrying in 20s
+    ERROR (attempt 4/4): Connection error. — retrying in 40s
+    FAILED after 4 attempts
+  [qwen3.5-27b] SecBench 10/10: What is TLS and why is it important?...
+    ERROR (attempt 1/4): Connection error. — retrying in 5s
+    ERROR (attempt 2/4): Connection error. — retrying in 10s
+    ERROR (attempt 3/4): Connection error. — retrying in 20s
+    ERROR (attempt 4/4): Connection error. — retrying in 40s
+    FAILED after 4 attempts
+  [qwen3.5-27b] SecBench score: 0.000 (10 samples)
+
+
+==================================================
+SecBench Results Summary
+==================================================
+  qwen3.5-2b         score=0.000  (n=10)
+  qwen3.5-4b         score=0.000  (n=10)
+  qwen3.5-9b         score=0.000  (n=10)
+  qwen3.5-27b        score=0.000  (n=10)
+
+Saved to /Users/frida/Documents/Self_Improving_AI/Final_Project/results/secbench_combined.json

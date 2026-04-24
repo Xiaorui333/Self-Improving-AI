@@ -1,0 +1,322 @@
+HumanEval: 20 problems loaded
+
+============================================================
+HumanEval: qwen2.5-7b
+============================================================
+  [qwen2.5-7b] HumanEval 1/20: strlen...
+    PASS — running pass@1: 1/1
+  [qwen2.5-7b] HumanEval 2/20: below_zero...
+    PASS — running pass@1: 2/2
+  [qwen2.5-7b] HumanEval 3/20: has_close_elements...
+    PASS — running pass@1: 3/3
+  [qwen2.5-7b] HumanEval 4/20: flip_case...
+    PASS — running pass@1: 4/4
+  [qwen2.5-7b] HumanEval 5/20: sum_product...
+    PASS — running pass@1: 5/5
+  [qwen2.5-7b] HumanEval 6/20: filter_by_substring...
+    PASS — running pass@1: 6/6
+  [qwen2.5-7b] HumanEval 7/20: largest_divisor...
+    FAIL — running pass@1: 6/7
+  [qwen2.5-7b] HumanEval 8/20: mean_absolute_deviation...
+    PASS — running pass@1: 7/8
+  [qwen2.5-7b] HumanEval 9/20: get_positive...
+    FAIL — running pass@1: 7/9
+  [qwen2.5-7b] HumanEval 10/20: how_many_times...
+    PASS — running pass@1: 8/10
+  [qwen2.5-7b] HumanEval 11/20: truncate_number...
+    PASS — running pass@1: 9/11
+  [qwen2.5-7b] HumanEval 12/20: all_prefixes...
+    FAIL — running pass@1: 9/12
+  [qwen2.5-7b] HumanEval 13/20: concatenate...
+    FAIL — running pass@1: 9/13
+  [qwen2.5-7b] HumanEval 14/20: string_sequence...
+    PASS — running pass@1: 10/14
+  [qwen2.5-7b] HumanEval 15/20: separate_paren_groups...
+    FAIL — running pass@1: 10/15
+  [qwen2.5-7b] HumanEval 16/20: find_closest_elements...
+    PASS — running pass@1: 11/16
+  [qwen2.5-7b] HumanEval 17/20: longest...
+    PASS — running pass@1: 12/17
+  [qwen2.5-7b] HumanEval 18/20: remove_duplicates...
+    FAIL — running pass@1: 12/18
+  [qwen2.5-7b] HumanEval 19/20: count_distinct_characters...
+    PASS — running pass@1: 13/19
+  [qwen2.5-7b] HumanEval 20/20: string_xor...
+    PASS — running pass@1: 14/20
+
+  [qwen2.5-7b] HumanEval pass@1 = 0.700 (14/20)
+
+============================================================
+HumanEval: qwen3.5-0.8b
+============================================================
+  [qwen3.5-0.8b] HumanEval 1/20: strlen (cached)
+    FAIL — running pass@1: 0/1
+  [qwen3.5-0.8b] HumanEval 2/20: below_zero (cached)
+    FAIL — running pass@1: 0/2
+  [qwen3.5-0.8b] HumanEval 3/20: has_close_elements (cached)
+    FAIL — running pass@1: 0/3
+  [qwen3.5-0.8b] HumanEval 4/20: flip_case (cached)
+    FAIL — running pass@1: 0/4
+  [qwen3.5-0.8b] HumanEval 5/20: sum_product (cached)
+    FAIL — running pass@1: 0/5
+  [qwen3.5-0.8b] HumanEval 6/20: filter_by_substring (cached)
+    FAIL — running pass@1: 0/6
+  [qwen3.5-0.8b] HumanEval 7/20: largest_divisor (cached)
+    FAIL — running pass@1: 0/7
+  [qwen3.5-0.8b] HumanEval 8/20: mean_absolute_deviation (cached)
+    FAIL — running pass@1: 0/8
+  [qwen3.5-0.8b] HumanEval 9/20: get_positive (cached)
+    FAIL — running pass@1: 0/9
+  [qwen3.5-0.8b] HumanEval 10/20: how_many_times (cached)
+    FAIL — running pass@1: 0/10
+  [qwen3.5-0.8b] HumanEval 11/20: truncate_number (cached)
+    FAIL — running pass@1: 0/11
+  [qwen3.5-0.8b] HumanEval 12/20: all_prefixes (cached)
+    FAIL — running pass@1: 0/12
+  [qwen3.5-0.8b] HumanEval 13/20: concatenate (cached)
+    FAIL — running pass@1: 0/13
+  [qwen3.5-0.8b] HumanEval 14/20: string_sequence (cached)
+    FAIL — running pass@1: 0/14
+  [qwen3.5-0.8b] HumanEval 15/20: separate_paren_groups (cached)
+    FAIL — running pass@1: 0/15
+  [qwen3.5-0.8b] HumanEval 16/20: find_closest_elements (cached)
+    FAIL — running pass@1: 0/16
+  [qwen3.5-0.8b] HumanEval 17/20: longest (cached)
+    FAIL — running pass@1: 0/17
+  [qwen3.5-0.8b] HumanEval 18/20: remove_duplicates (cached)
+    FAIL — running pass@1: 0/18
+  [qwen3.5-0.8b] HumanEval 19/20: count_distinct_characters (cached)
+    FAIL — running pass@1: 0/19
+  [qwen3.5-0.8b] HumanEval 20/20: string_xor (cached)
+    FAIL — running pass@1: 0/20
+
+  [qwen3.5-0.8b] HumanEval pass@1 = 0.000 (0/20)
+
+============================================================
+HumanEval: qwen3.5-2b
+============================================================
+  [qwen3.5-2b] HumanEval 1/20: strlen (cached)
+    PASS — running pass@1: 1/1
+  [qwen3.5-2b] HumanEval 2/20: below_zero (cached)
+    PASS — running pass@1: 2/2
+  [qwen3.5-2b] HumanEval 3/20: has_close_elements (cached)
+    PASS — running pass@1: 3/3
+  [qwen3.5-2b] HumanEval 4/20: flip_case (cached)
+    PASS — running pass@1: 4/4
+  [qwen3.5-2b] HumanEval 5/20: sum_product (cached)
+    PASS — running pass@1: 5/5
+  [qwen3.5-2b] HumanEval 6/20: filter_by_substring (cached)
+    PASS — running pass@1: 6/6
+  [qwen3.5-2b] HumanEval 7/20: largest_divisor (cached)
+    PASS — running pass@1: 7/7
+  [qwen3.5-2b] HumanEval 8/20: mean_absolute_deviation (cached)
+    PASS — running pass@1: 8/8
+  [qwen3.5-2b] HumanEval 9/20: get_positive (cached)
+    PASS — running pass@1: 9/9
+  [qwen3.5-2b] HumanEval 10/20: how_many_times (cached)
+    PASS — running pass@1: 10/10
+  [qwen3.5-2b] HumanEval 11/20: truncate_number (cached)
+    PASS — running pass@1: 11/11
+  [qwen3.5-2b] HumanEval 12/20: all_prefixes (cached)
+    FAIL — running pass@1: 11/12
+  [qwen3.5-2b] HumanEval 13/20: concatenate (cached)
+    PASS — running pass@1: 12/13
+  [qwen3.5-2b] HumanEval 14/20: string_sequence (cached)
+    PASS — running pass@1: 13/14
+  [qwen3.5-2b] HumanEval 15/20: separate_paren_groups (cached)
+    FAIL — running pass@1: 13/15
+  [qwen3.5-2b] HumanEval 16/20: find_closest_elements (cached)
+    PASS — running pass@1: 14/16
+  [qwen3.5-2b] HumanEval 17/20: longest (cached)
+    PASS — running pass@1: 15/17
+  [qwen3.5-2b] HumanEval 18/20: remove_duplicates (cached)
+    FAIL — running pass@1: 15/18
+  [qwen3.5-2b] HumanEval 19/20: count_distinct_characters (cached)
+    PASS — running pass@1: 16/19
+  [qwen3.5-2b] HumanEval 20/20: string_xor (cached)
+    PASS — running pass@1: 17/20
+
+  [qwen3.5-2b] HumanEval pass@1 = 0.850 (17/20)
+
+============================================================
+HumanEval: qwen3.5-4b
+============================================================
+  [qwen3.5-4b] HumanEval 1/20: strlen (cached)
+    PASS — running pass@1: 1/1
+  [qwen3.5-4b] HumanEval 2/20: below_zero (cached)
+    FAIL — running pass@1: 1/2
+  [qwen3.5-4b] HumanEval 3/20: has_close_elements (cached)
+    FAIL — running pass@1: 1/3
+  [qwen3.5-4b] HumanEval 4/20: flip_case (cached)
+    PASS — running pass@1: 2/4
+  [qwen3.5-4b] HumanEval 5/20: sum_product (cached)
+    FAIL — running pass@1: 2/5
+  [qwen3.5-4b] HumanEval 6/20: filter_by_substring (cached)
+    PASS — running pass@1: 3/6
+  [qwen3.5-4b] HumanEval 7/20: largest_divisor (cached)
+    FAIL — running pass@1: 3/7
+  [qwen3.5-4b] HumanEval 8/20: mean_absolute_deviation (cached)
+    FAIL — running pass@1: 3/8
+  [qwen3.5-4b] HumanEval 9/20: get_positive (cached)
+    FAIL — running pass@1: 3/9
+  [qwen3.5-4b] HumanEval 10/20: how_many_times...
+    FAIL — running pass@1: 3/10
+  [qwen3.5-4b] HumanEval 11/20: truncate_number...
+    PASS — running pass@1: 4/11
+  [qwen3.5-4b] HumanEval 12/20: all_prefixes...
+    PASS — running pass@1: 5/12
+  [qwen3.5-4b] HumanEval 13/20: concatenate...
+    PASS — running pass@1: 6/13
+  [qwen3.5-4b] HumanEval 14/20: string_sequence (cached)
+    PASS — running pass@1: 7/14
+  [qwen3.5-4b] HumanEval 15/20: separate_paren_groups...
+    PASS — running pass@1: 8/15
+  [qwen3.5-4b] HumanEval 16/20: find_closest_elements...
+    FAIL — running pass@1: 8/16
+  [qwen3.5-4b] HumanEval 17/20: longest...
+    FAIL — running pass@1: 8/17
+  [qwen3.5-4b] HumanEval 18/20: remove_duplicates...
+    FAIL — running pass@1: 8/18
+  [qwen3.5-4b] HumanEval 19/20: count_distinct_characters...
+    PASS — running pass@1: 9/19
+  [qwen3.5-4b] HumanEval 20/20: string_xor...
+    PASS — running pass@1: 10/20
+
+  [qwen3.5-4b] HumanEval pass@1 = 0.500 (10/20)
+
+============================================================
+HumanEval: qwen3.5-9b
+============================================================
+  [qwen3.5-9b] HumanEval 1/20: strlen...
+    PASS — running pass@1: 1/1
+  [qwen3.5-9b] HumanEval 2/20: below_zero...
+    FAIL — running pass@1: 1/2
+  [qwen3.5-9b] HumanEval 3/20: has_close_elements (cached)
+    PASS — running pass@1: 2/3
+  [qwen3.5-9b] HumanEval 4/20: flip_case...
+    PASS — running pass@1: 3/4
+  [qwen3.5-9b] HumanEval 5/20: sum_product...
+    FAIL — running pass@1: 3/5
+  [qwen3.5-9b] HumanEval 6/20: filter_by_substring...
+    PASS — running pass@1: 4/6
+  [qwen3.5-9b] HumanEval 7/20: largest_divisor...
+    PASS — running pass@1: 5/7
+  [qwen3.5-9b] HumanEval 8/20: mean_absolute_deviation...
+    PASS — running pass@1: 6/8
+  [qwen3.5-9b] HumanEval 9/20: get_positive...
+    PASS — running pass@1: 7/9
+  [qwen3.5-9b] HumanEval 10/20: how_many_times...
+    FAIL — running pass@1: 7/10
+  [qwen3.5-9b] HumanEval 11/20: truncate_number...
+    PASS — running pass@1: 8/11
+  [qwen3.5-9b] HumanEval 12/20: all_prefixes...
+    PASS — running pass@1: 9/12
+  [qwen3.5-9b] HumanEval 13/20: concatenate...
+    PASS — running pass@1: 10/13
+  [qwen3.5-9b] HumanEval 14/20: string_sequence...
+    PASS — running pass@1: 11/14
+  [qwen3.5-9b] HumanEval 15/20: separate_paren_groups...
+    PASS — running pass@1: 12/15
+  [qwen3.5-9b] HumanEval 16/20: find_closest_elements...
+    PASS — running pass@1: 13/16
+  [qwen3.5-9b] HumanEval 17/20: longest...
+    PASS — running pass@1: 14/17
+  [qwen3.5-9b] HumanEval 18/20: remove_duplicates...
+    FAIL — running pass@1: 14/18
+  [qwen3.5-9b] HumanEval 19/20: count_distinct_characters (cached)
+    PASS — running pass@1: 15/19
+  [qwen3.5-9b] HumanEval 20/20: string_xor...
+    PASS — running pass@1: 16/20
+
+  [qwen3.5-9b] HumanEval pass@1 = 0.800 (16/20)
+
+============================================================
+HumanEval: qwen3.5-27b
+============================================================
+  [qwen3.5-27b] HumanEval 1/20: strlen...
+    PASS — running pass@1: 1/1
+  [qwen3.5-27b] HumanEval 2/20: below_zero...
+    FAIL — running pass@1: 1/2
+  [qwen3.5-27b] HumanEval 3/20: has_close_elements (cached)
+    FAIL — running pass@1: 1/3
+  [qwen3.5-27b] HumanEval 4/20: flip_case...
+    PASS — running pass@1: 2/4
+  [qwen3.5-27b] HumanEval 5/20: sum_product...
+    FAIL — running pass@1: 2/5
+  [qwen3.5-27b] HumanEval 6/20: filter_by_substring...
+    PASS — running pass@1: 3/6
+  [qwen3.5-27b] HumanEval 7/20: largest_divisor...
+    FAIL — running pass@1: 3/7
+  [qwen3.5-27b] HumanEval 8/20: mean_absolute_deviation...
+    FAIL — running pass@1: 3/8
+  [qwen3.5-27b] HumanEval 9/20: get_positive...
+    PASS — running pass@1: 4/9
+  [qwen3.5-27b] HumanEval 10/20: how_many_times...
+    FAIL — running pass@1: 4/10
+  [qwen3.5-27b] HumanEval 11/20: truncate_number...
+    PASS — running pass@1: 5/11
+  [qwen3.5-27b] HumanEval 12/20: all_prefixes...
+    PASS — running pass@1: 6/12
+  [qwen3.5-27b] HumanEval 13/20: concatenate...
+    ERROR (attempt 1/3): Error code: 402 - {'detail': {'error': 'You need positive balance to do inference. Please add balance manually or setup top-up'}, 'provider': 'deepinfra'} — retrying in 5s
+    ERROR (attempt 2/3): Error code: 402 - {'detail': {'error': 'You need positive balance to do inference. Please add balance manually or setup top-up'}, 'provider': 'deepinfra'} — retrying in 10s
+    ERROR (attempt 3/3): Error code: 402 - {'detail': {'error': 'You need positive balance to do inference. Please add balance manually or setup top-up'}, 'provider': 'deepinfra'} — retrying in 20s
+    FAILED after 3 attempts
+    FAIL — running pass@1: 6/13
+  [qwen3.5-27b] HumanEval 14/20: string_sequence...
+    ERROR (attempt 1/3): Error code: 402 - {'detail': {'error': 'You need positive balance to do inference. Please add balance manually or setup top-up'}, 'provider': 'deepinfra'} — retrying in 5s
+    ERROR (attempt 2/3): Error code: 402 - {'detail': {'error': 'You need positive balance to do inference. Please add balance manually or setup top-up'}, 'provider': 'deepinfra'} — retrying in 10s
+    ERROR (attempt 3/3): Error code: 402 - {'detail': {'error': 'You need positive balance to do inference. Please add balance manually or setup top-up'}, 'provider': 'deepinfra'} — retrying in 20s
+    FAILED after 3 attempts
+    FAIL — running pass@1: 6/14
+  [qwen3.5-27b] HumanEval 15/20: separate_paren_groups...
+    ERROR (attempt 1/3): Error code: 402 - {'detail': {'error': 'You need positive balance to do inference. Please add balance manually or setup top-up'}, 'provider': 'deepinfra'} — retrying in 5s
+    ERROR (attempt 2/3): Error code: 402 - {'detail': {'error': 'You need positive balance to do inference. Please add balance manually or setup top-up'}, 'provider': 'deepinfra'} — retrying in 10s
+    ERROR (attempt 3/3): Error code: 402 - {'detail': {'error': 'You need positive balance to do inference. Please add balance manually or setup top-up'}, 'provider': 'deepinfra'} — retrying in 20s
+    FAILED after 3 attempts
+    FAIL — running pass@1: 6/15
+  [qwen3.5-27b] HumanEval 16/20: find_closest_elements...
+    ERROR (attempt 1/3): Error code: 402 - {'detail': {'error': 'You need positive balance to do inference. Please add balance manually or setup top-up'}, 'provider': 'deepinfra'} — retrying in 5s
+    ERROR (attempt 2/3): Error code: 402 - {'detail': {'error': 'You need positive balance to do inference. Please add balance manually or setup top-up'}, 'provider': 'deepinfra'} — retrying in 10s
+    ERROR (attempt 3/3): Error code: 402 - {'detail': {'error': 'You need positive balance to do inference. Please add balance manually or setup top-up'}, 'provider': 'deepinfra'} — retrying in 20s
+    FAILED after 3 attempts
+    FAIL — running pass@1: 6/16
+  [qwen3.5-27b] HumanEval 17/20: longest...
+    ERROR (attempt 1/3): Error code: 402 - {'detail': {'error': 'You need positive balance to do inference. Please add balance manually or setup top-up'}, 'provider': 'deepinfra'} — retrying in 5s
+    ERROR (attempt 2/3): Error code: 402 - {'detail': {'error': 'You need positive balance to do inference. Please add balance manually or setup top-up'}, 'provider': 'deepinfra'} — retrying in 10s
+    ERROR (attempt 3/3): Error code: 402 - {'detail': {'error': 'You need positive balance to do inference. Please add balance manually or setup top-up'}, 'provider': 'deepinfra'} — retrying in 20s
+    FAILED after 3 attempts
+    FAIL — running pass@1: 6/17
+  [qwen3.5-27b] HumanEval 18/20: remove_duplicates...
+    ERROR (attempt 1/3): Error code: 402 - {'detail': {'error': 'You need positive balance to do inference. Please add balance manually or setup top-up'}, 'provider': 'deepinfra'} — retrying in 5s
+    ERROR (attempt 2/3): Error code: 402 - {'detail': {'error': 'You need positive balance to do inference. Please add balance manually or setup top-up'}, 'provider': 'deepinfra'} — retrying in 10s
+    ERROR (attempt 3/3): Error code: 402 - {'detail': {'error': 'You need positive balance to do inference. Please add balance manually or setup top-up'}, 'provider': 'deepinfra'} — retrying in 20s
+    FAILED after 3 attempts
+    FAIL — running pass@1: 6/18
+  [qwen3.5-27b] HumanEval 19/20: count_distinct_characters...
+    ERROR (attempt 1/3): Error code: 402 - {'detail': {'error': 'You need positive balance to do inference. Please add balance manually or setup top-up'}, 'provider': 'deepinfra'} — retrying in 5s
+    ERROR (attempt 2/3): Error code: 402 - {'detail': {'error': 'You need positive balance to do inference. Please add balance manually or setup top-up'}, 'provider': 'deepinfra'} — retrying in 10s
+    ERROR (attempt 3/3): Error code: 402 - {'detail': {'error': 'You need positive balance to do inference. Please add balance manually or setup top-up'}, 'provider': 'deepinfra'} — retrying in 20s
+    FAILED after 3 attempts
+    FAIL — running pass@1: 6/19
+  [qwen3.5-27b] HumanEval 20/20: string_xor...
+    ERROR (attempt 1/3): Error code: 402 - {'detail': {'error': 'You need positive balance to do inference. Please add balance manually or setup top-up'}, 'provider': 'deepinfra'} — retrying in 5s
+    ERROR (attempt 2/3): Error code: 402 - {'detail': {'error': 'You need positive balance to do inference. Please add balance manually or setup top-up'}, 'provider': 'deepinfra'} — retrying in 10s
+    ERROR (attempt 3/3): Error code: 402 - {'detail': {'error': 'You need positive balance to do inference. Please add balance manually or setup top-up'}, 'provider': 'deepinfra'} — retrying in 20s
+    FAILED after 3 attempts
+    FAIL — running pass@1: 6/20
+
+  [qwen3.5-27b] HumanEval pass@1 = 0.300 (6/20)
+
+
+============================================================
+HumanEval Results (pass@1)
+============================================================
+  qwen2.5-7b          pass@1=0.700  (14/20)
+  qwen3.5-0.8b        pass@1=0.000  (0/20)
+  qwen3.5-2b          pass@1=0.850  (17/20)
+  qwen3.5-4b          pass@1=0.500  (10/20)
+  qwen3.5-9b          pass@1=0.800  (16/20)
+  qwen3.5-27b         pass@1=0.300  (6/20)
+
+Saved to /Users/frida/Documents/Self_Improving_AI/Final_Project/results/humaneval_combined.json

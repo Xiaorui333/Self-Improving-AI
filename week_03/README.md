@@ -90,7 +90,7 @@ rpm-baseline --db-path /absolute/path/to/rpm_mcts.sqlite report-pass1
 
 | Run Name | Model | Dataset/Split | Samples | pass@1 | Date |
 |---|---|---|---:|---:|---|
-| `baseline_openai_gpt4omini_full164` | `gpt-4o-mini` | `humaneval_plus/test` | 164 | **0.3354** (55/164) | 2026-02-24 |
+| `baseline_openai_gpt4omini_full164` | `gpt-4o-mini` | `humaneval_plus/test` | 164 | **0.3354** (55/164) 
 
 Single-shot greedy decoding (temperature=0, top_p=1.0, max_new_tokens=256).
 

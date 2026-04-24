@@ -1,0 +1,26 @@
+{
+  "qwen2.5-7b": {
+    "secbench_score": 0.3,
+    "n_samples": 10
+  },
+  "qwen3.5-0.8b": {
+    "secbench_score": 0.0,
+    "n_samples": 10
+  },
+  "qwen3.5-2b": {
+    "secbench_score": 0.0,
+    "n_samples": 10
+  },
+  "qwen3.5-4b": {
+    "secbench_score": 0.0,
+    "n_samples": 10
+  },
+  "qwen3.5-9b": {
+    "secbench_score": 0.0,
+    "n_samples": 10
+  },
+  "qwen3.5-27b": {
+    "secbench_score": 0.0,
+    "n_samples": 10
+  }
+}

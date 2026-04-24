@@ -1,6 +1,16 @@
+# Inference (Parts 1-4)
+httpx>=0.27.0
+openai>=1.0.0
+portkey-ai
+ddgs
+wikipedia
+pydantic>=2.0.0
+datasets>=3.0.0
+
+# Training (Parts 5-6, Modal)
 torch>=2.0.0
 transformers>=4.46.0,<5.0.0
 trl>=0.16.0,<0.17.0
 peft>=0.8.0
-datasets>=3.0.0
 accelerate>=0.34.0
+modal

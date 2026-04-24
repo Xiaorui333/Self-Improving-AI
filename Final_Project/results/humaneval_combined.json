@@ -1,0 +1,32 @@
+{
+  "qwen3.5-0.8b": {
+    "pass_at_1": 0.0,
+    "passed": 0,
+    "total": 20
+  },
+  "qwen3.5-2b": {
+    "pass_at_1": 0.85,
+    "passed": 17,
+    "total": 20
+  },
+  "qwen3.5-4b": {
+    "pass_at_1": 0.5,
+    "passed": 10,
+    "total": 20
+  },
+  "qwen3.5-9b": {
+    "pass_at_1": 0.8,
+    "passed": 16,
+    "total": 20
+  },
+  "qwen3.5-27b": {
+    "pass_at_1": 0.3,
+    "passed": 6,
+    "total": 20
+  },
+  "qwen2.5-7b": {
+    "pass_at_1": 0.7,
+    "passed": 14,
+    "total": 20
+  }
+}

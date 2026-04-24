@@ -323,13 +323,13 @@ Python 3.11 + numpy<2 + transformers<4.47 + torch + sentence-transformers
 
 ```
 ┌──────────────────┐         ┌──────────────────┐
-│  Hugging Face    │         │    SQLite DB      │
-│                  │         │                   │
-│  humaneval_plus ─┼────────▶│  164 problems     │  evalplus/humanevalplus
-│  mbpp_plus      ─┼────────▶│  378 problems     │
-│  apps           ─┼────────▶│  3,670 train +    │
-│  codecontests   ─┼────────▶│  7,368 train +    │  target_counts
-│                  │         │  test splits       │  paper-aligned
+│  Hugging Face    │         │    SQLite DB     │
+│                  │         │                  │
+│  humaneval_plus ─┼────────▶│  164 problems    │  evalplus/humanevalplus
+│  mbpp_plus      ─┼────────▶│  378 problems    │
+│  apps           ─┼────────▶│  3,670 train +   │
+│  codecontests   ─┼────────▶│  7,368 train +   │  target_counts
+│                  │         │  test splits     │  paper-aligned
 └──────────────────┘         └──────────────────┘
 ```
 
@@ -455,7 +455,7 @@ class Node:
 
 ---
 
-# Step 5 — Phase 1: Selection (UCB + α·K)
+# Phase 1: Selection (UCB + α·K)
 
 ```python
 def _ucb(parent, child, cfg):
@@ -477,7 +477,7 @@ def _select_leaf(root, cfg):
 
 ---
 
-# Step 5 — Phase 2: Expansion (diversity + sim filter)
+# Phase 2: Expansion (diversity + sim filter)
 
 ```python
 def _expand(node, prompt, entry_point, backend, retriever, cfg, ...):
@@ -501,7 +501,7 @@ def _expand(node, prompt, entry_point, backend, retriever, cfg, ...):
 
 ---
 
-# Step 5 — Phase 3: Evaluation + Lock Winner
+# Phase 3: Evaluation + Lock Winner
 
 ```python
 def _reflect_and_score(dataset_name, prompt, entry_point, node, ...):
@@ -521,7 +521,7 @@ def _run_python(program_text, timeout_sec):
 
 ---
 
-# Step 5 — Phase 4: Backprop + Main Loop
+# Phase 4: Backprop + Main Loop
 
 ```python
 def _backpropagate(path, reward, conn):
@@ -548,7 +548,7 @@ def _search_one(prompt, entry_point, backend, retriever, cfg, ...):
 
 ---
 
-# Step 5 — Reflection & Node Injection
+# Reflection & Node Injection
 
 ```python
 # Step-mode only (APPS, CodeContests) — disabled for HumanEval
@@ -567,7 +567,7 @@ text = good_prefix  # loop back, execute shorter state
 
 ---
 
-# Step 5 — MCTS Entry Point
+# MCTS Entry Point
 
 ```python
 def run_rpm_mcts(conn, cfg):
@@ -584,7 +584,7 @@ def run_rpm_mcts(conn, cfg):
 
 ---
 
-# Step 5 — Similarity Filter
+# Similarity Filter
 
 ```python
 def _similarity_filter(candidates, retriever, threshold=0.85):
